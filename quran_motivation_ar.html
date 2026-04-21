@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="slides-format" content="viewport">
+  <title>محفزات يومية لطالب حفظ القرآن ولحافظه</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-bg: #0f172a;
+      --color-bg-deep: #020617;
+      --color-surface: #162033;
+      --color-text: #f8fafc;
+      --color-text-secondary: #dbe4f0;
+      --color-text-muted: #9fb0c7;
+      --color-accent-1: #22c55e;
+      --color-accent-2: #f59e0b;
+      --color-accent-3: #38bdf8;
+      --color-glass-bg: rgba(255,255,255,0.07);
+      --color-glass-border: rgba(255,255,255,0.10);
+      --color-vignette: rgba(0,0,0,0.42);
+      --font-display: 'Cairo', sans-serif;
+      --font-body: 'Noto Naskh Arabic', serif;
+    }
+  </style>
+  <style>
+    :root { --color-bg: #0f172a; --color-text: #f8fafc; --glow-color-rgb: 34,197,94; }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--color-bg);height:100%;overflow:hidden}
+    body{font-family:'Noto Naskh Arabic',serif;color:var(--color-text);width:100vw;height:100vh}
+    .deck{width:100vw;height:100vh;position:relative}
+    .slide{position:absolute;inset:0;opacity:0;transform:scale(.96);transition:opacity .7s ease,transform .7s ease;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--color-bg)}
+    .slide.active{opacity:1;transform:scale(1);pointer-events:auto}
+    .slide>.content{position:relative;z-index:2;width:100%;max-width:1180px;padding:clamp(1.4rem,3.6vw,3.2rem)}
+    .gradient-mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+    .blob{position:absolute;border-radius:50%;filter:blur(90px);animation:float-slow 14s ease-in-out infinite}
+    .blob:nth-child(2){animation:float-drift 18s ease-in-out infinite}
+    .blob:nth-child(3){animation:float-slow 20s ease-in-out infinite reverse}
+    .blob:nth-child(4){animation:float-drift 16s ease-in-out infinite reverse}
+    .slide::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");background-size:260px 260px;opacity:.03;mix-blend-mode:overlay}
+    .slide::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center, transparent 52%, var(--color-vignette) 100%)}
+    .reveal{opacity:0;transform:translateY(20px)}
+    .nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:100;background:rgba(255,255,255,.08);backdrop-filter:blur(10px);padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.11)}
+    .nav-btn{width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:1.2rem}
+    .slide-dots{display:flex;gap:8px}.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer}.dot.active{background:var(--color-accent-1);transform:scale(1.25)}
+    .slide-counter{font-size:.82rem;color:var(--color-text-muted);min-width:44px;text-align:center}
+    .text-glow{text-shadow:0 0 22px rgba(var(--glow-color-rgb),.45),0 0 44px rgba(var(--glow-color-rgb),.18)}
+    .glass{background:var(--color-glass-bg);border:1px solid var(--color-glass-border);backdrop-filter:blur(14px);border-radius:24px;box-shadow:0 12px 40px rgba(0,0,0,.18)}
+    .pill{display:inline-flex;align-items:center;gap:.45rem;padding:.4rem .85rem;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.24);color:#d7ffe5;font-family:'Cairo',sans-serif;font-weight:700;font-size:.95rem}
+    .ayah{font-family:'Noto Naskh Arabic',serif;line-height:1.9}
+    .hero-emoji{font-size:116px;animation:float 3.5s ease-in-out infinite;filter:drop-shadow(0 10px 30px rgba(34,197,94,.24))}
+    .particle-canvas,.particle-canvas-ambient{position:absolute;inset:0;z-index:1}
+    .cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:28px}
+    .cards-2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:26px}
+    .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:24px}
+    .card-title{font-family:'Cairo',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:.45rem}
+    .card-text{font-size:1.08rem;color:var(--color-text-secondary);line-height:1.7}
+    .mini{font-size:.92rem;color:var(--color-text-muted)}
+    .section-title{font-family:'Cairo',sans-serif;font-size:clamp(2rem,4.2vw,3.1rem);font-weight:800;line-height:1.2;margin:0 0 .6rem}
+    .section-sub{font-size:1.12rem;color:var(--color-text-secondary);max-width:920px;line-height:1.8}
+    .icon{font-size:2rem;margin-bottom:.6rem}
+    .bar-row{display:grid;grid-template-columns:130px 1fr 60px;gap:14px;align-items:center;margin-top:14px}
+    .bar-track{height:18px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--color-accent-1),var(--color-accent-2))}
+    .timeline{position:relative;margin-top:26px;padding-right:34px}
+    .timeline:before{content:'';position:absolute;right:10px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--color-accent-1),var(--color-accent-3))}
+    .t-item{position:relative;margin-bottom:18px;padding:16px 18px 16px 20px}
+    .t-item:before{content:'';position:absolute;right:-29px;top:20px;width:14px;height:14px;border-radius:50%;background:var(--color-accent-1);box-shadow:0 0 16px rgba(34,197,94,.7)}
+    .closing{font-family:'Cairo',sans-serif;font-weight:800;font-size:clamp(2.3rem,5vw,4rem)}
+    .infobox{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center;margin-top:26px}
+    .circle-wrap{display:flex;justify-content:center;align-items:center}
+    .circle{width:250px;height:250px;border-radius:50%;background:conic-gradient(var(--color-accent-1) 0 78%, rgba(255,255,255,.08) 78% 100%);display:flex;justify-content:center;align-items:center;box-shadow:0 0 40px rgba(34,197,94,.15)}
+    .circle-inner{width:175px;height:175px;border-radius:50%;background:#0e1728;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    @keyframes float-slow{0%{transform:translate(0,0) scale(1)}25%{transform:translate(40px,-40px) scale(1.1)}50%{transform:translate(-30px,30px) scale(.92)}75%{transform:translate(26px,18px) scale(1.06)}100%{transform:translate(0,0) scale(1)}}
+    @keyframes float-drift{0%{transform:translate(0,0) scale(1) rotate(0)}33%{transform:translate(-40px,-50px) scale(1.14) rotate(3deg)}66%{transform:translate(34px,24px) scale(.9) rotate(-2deg)}100%{transform:translate(0,0) scale(1) rotate(0)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+    @media (max-width: 900px){
+      .cards-3,.cards-2,.metric-grid,.infobox{grid-template-columns:1fr}
+      .bar-row{grid-template-columns:100px 1fr 48px}
+      .hero-emoji{font-size:88px}
+    }
+  </style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none"></div>
+<div class="deck">
+  <section class="slide active" data-slide="1">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:460px;height:460px;top:-120px;left:-90px;background:var(--color-accent-1);opacity:.15"></div>
+      <div class="blob" style="width:320px;height:320px;bottom:-90px;right:-40px;background:var(--color-accent-2);opacity:.12"></div>
+      <div class="blob" style="width:240px;height:240px;top:38%;right:14%;background:var(--color-accent-3);opacity:.1"></div>
+      <div class="blob" style="width:180px;height:180px;bottom:18%;left:20%;background:#a78bfa;opacity:.08"></div>
+    </div>
+    <canvas class="particle-canvas"></canvas>
+    <div class="content text-center">
+      <div class="hero-emoji reveal">📖</div>
+      <div class="pill reveal">بطاقات عربية جاهزة للمشاركة</div>
+      <h1 class="reveal" style="font-family:'Cairo',sans-serif;font-weight:800;font-size:clamp(2.4rem,6vw,5rem);line-height:1.15;margin:.8rem 0 1rem;background:linear-gradient(135deg,var(--color-accent-1),var(--color-accent-2),#fff3c4);-webkit-background-clip:text;background-clip:text;color:transparent">محفزات يومية لطالب حفظ القرآن ولحافظه</h1>
+      <p class="reveal" style="font-size:1.15rem;letter-spacing:.08em;color:var(--color-text-muted);font-family:'Cairo',sans-serif">أفكار إيمانية وعملية ونفسية في هيئة شرائح وبطاقات إنفوجرافية</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:340px;height:340px;top:-80px;right:-70px;background:var(--color-accent-1);opacity:.08"></div>
+      <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-50px;background:var(--color-accent-3);opacity:.07"></div>
+    </div>
+    <div class="content">
+      <div class="pill reveal">1 · المعنى قبل الكمية</div>
+      <h2 class="section-title reveal">ابدأ يومك بتجديد النية</h2>
+      <p class="section-sub reveal">أقوى دافع للاستمرار أن تتذكر شرف التعامل مع كلام الله، وأن كل آية تحفظها تقرّبك من الله وتزيدك رفعة وثباتًا.</p>
+      <div class="cards-3">
+        <div class="glass reveal" style="padding:24px"><div class="icon">🤍</div><div class="card-title">نية صادقة</div><div class="card-text">قل قبل الحفظ: اللهم افتح لي في كتابك، وأعنّي على حفظه والعمل به.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">✨</div><div class="card-title">استحضار الشرف</div><div class="card-text">لست تحفظ نصًا عاديًا، بل تحفظ أعظم كلام وأكرمه وأبقى أثرًا.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">🌱</div><div class="card-title">خطوة صغيرة دائمة</div><div class="card-text">ثبات نصف صفحة يوميًا أنفع من اندفاع كبير يتبعه انقطاع طويل.</div></div>
+      </div>
+      <div class="glass reveal ayah" style="margin-top:22px;padding:18px 24px;font-size:1.22rem">اجعل افتتاح يومك: <strong>أنا اليوم أخدم كتاب الله، لا أؤدي مهمة ثقيلة فقط.</strong></div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:300px;height:300px;top:-50px;left:-60px;background:var(--color-accent-2);opacity:.08"></div>
+      <div class="blob" style="width:230px;height:230px;bottom:-40px;right:-30px;background:var(--color-accent-1);opacity:.06"></div>
+    </div>
+    <canvas class="particle-canvas-ambient"></canvas>
+    <div class="content">
+      <div class="pill reveal">2 · روتين ثابت</div>
+      <h2 class="section-title reveal">البرنامج اليومي المختصر</h2>
+      <p class="section-sub reveal">البطولة ليست في الحماس المؤقت، بل في موعد ثابت لا يُساوَم عليه كل يوم.</p>
+      <div class="metric-grid">
+        <div class="glass reveal" style="padding:20px;text-align:center"><div class="icon">🌅</div><div class="card-title text-glow">15–30 د</div><div class="mini">حفظ جديد في أفضل وقت</div></div>
+        <div class="glass reveal" style="padding:20px;text-align:center"><div class="icon">🕓</div><div class="card-title text-glow">20 د</div><div class="mini">مراجعة بعد صلاة ثابتة</div></div>
+        <div class="glass reveal" style="padding:20px;text-align:center"><div class="icon">🎧</div><div class="card-title text-glow">10 د</div><div class="mini">استماع أثناء الفراغ</div></div>
+        <div class="glass reveal" style="padding:20px;text-align:center"><div class="icon">🌙</div><div class="card-title text-glow">5–10 د</div><div class="mini">تثبيت في النوافل</div></div>
+      </div>
+      <div class="timeline">
+        <div class="glass t-item reveal"><div class="card-title">الفجر أو بعده</div><div class="card-text">حفظ جديد مع تكرار كثير للنظر والقراءة والتسميع.</div></div>
+        <div class="glass t-item reveal"><div class="card-title">بعد الظهر أو العصر</div><div class="card-text">مراجعة محفوظ الأمس وما قبله، ولو بقدر يسير ثابت.</div></div>
+        <div class="glass t-item reveal"><div class="card-title">أثناء الحركة</div><div class="card-text">استماع بصوت قارئ واحد لتثبيت السمع واللفظ ومخارج الحروف.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="4">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:320px;height:320px;top:-80px;right:-50px;background:var(--color-accent-3);opacity:.09"></div>
+      <div class="blob" style="width:260px;height:260px;bottom:-70px;left:-40px;background:var(--color-accent-1);opacity:.07"></div>
+    </div>
+    <div class="content">
+      <div class="pill reveal">3 · محفزات نفسية</div>
+      <h2 class="section-title reveal">بدّل حديثك الداخلي</h2>
+      <p class="section-sub reveal">الكلمات التي تقولها لنفسك تؤثر مباشرة في الاستمرار؛ لذلك اجعل رسالتك اليومية مشجعة وواضحة.</p>
+      <div class="cards-2">
+        <div class="glass reveal" style="padding:24px">
+          <div class="card-title">❌ عبارات تُطفئ العزم</div>
+          <div class="card-text">أنا لا أستطيع، الحفظ صعب جدًا، فاتني الوقت، ذاكرتي ضعيفة.</div>
+        </div>
+        <div class="glass reveal" style="padding:24px">
+          <div class="card-title">✅ عبارات تبني الاستمرار</div>
+          <div class="card-text">أنا أستطيع بالمداومة، القليل الثابت يكفي، سأحفظ اليوم وراجع غدًا، كل يوم يضيف نورًا.</div>
+        </div>
+      </div>
+      <div class="glass reveal" style="padding:22px;margin-top:22px">
+        <div class="card-title">بطاقة سريعة للمشاركة</div>
+        <div class="ayah" style="font-size:1.28rem">لا تقل: <strong>متى أختم؟</strong> بل قل: <strong>كيف أثبت اليوم؟</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="5">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:350px;height:350px;top:-100px;left:-80px;background:var(--color-accent-1);opacity:.09"></div>
+      <div class="blob" style="width:240px;height:240px;bottom:-50px;right:-20px;background:var(--color-accent-2);opacity:.08"></div>
+    </div>
+    <div class="content">
+      <div class="pill reveal">4 · إنفوجرافيك التثبيت</div>
+      <h2 class="section-title reveal">نسبة النجاح في التثبيت ترتفع بالمراجعة</h2>
+      <p class="section-sub reveal">الفكرة الأساسية: لا تجعل الحفظ الجديد يسبق المراجعة باستمرار؛ فالمحفوظ يُبنى بالعودة إليه مرارًا.</p>
+      <div class="infobox">
+        <div>
+          <div class="bar-row reveal"><div class="mini">حفظ جديد</div><div class="bar-track"><div class="bar-fill" data-width="35"></div></div><div class="mini">35%</div></div>
+          <div class="bar-row reveal"><div class="mini">مراجعة قريبة</div><div class="bar-track"><div class="bar-fill" data-width="75"></div></div><div class="mini">75%</div></div>
+          <div class="bar-row reveal"><div class="mini">تسميع</div><div class="bar-track"><div class="bar-fill" data-width="68"></div></div><div class="mini">68%</div></div>
+          <div class="bar-row reveal"><div class="mini">صلاة بالنص</div><div class="bar-track"><div class="bar-fill" data-width="82"></div></div><div class="mini">82%</div></div>
+          <div class="glass reveal" style="padding:16px 18px;margin-top:20px"><div class="card-text">قاعدة مشاركة مختصرة: <strong>كل صفحة جديدة تحتاج صداقة يومية مع صفحات الأمس.</strong></div></div>
+        </div>
+        <div class="circle-wrap reveal">
+          <div class="circle"><div class="circle-inner"><div class="mini">التوازن المقترح</div><div class="closing text-glow">70%</div><div class="mini">مراجعة وتثبيت</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="6">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:320px;height:320px;top:-60px;right:-80px;background:var(--color-accent-2);opacity:.08"></div>
+      <div class="blob" style="width:250px;height:250px;bottom:-70px;left:-30px;background:var(--color-accent-3);opacity:.07"></div>
+    </div>
+    <div class="content">
+      <div class="pill reveal">5 · وسائل عملية</div>
+      <h2 class="section-title reveal">محفزات بسيطة لكنها مؤثرة</h2>
+      <div class="cards-3">
+        <div class="glass reveal" style="padding:24px"><div class="icon">🕌</div><div class="card-title">الصلاة بالمحفوظ</div><div class="card-text">اقرأ في السنن والنوافل بما حفظت، فالصلاة تثبّت وتكشف مواضع النسيان.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">👥</div><div class="card-title">رفيق قرآن</div><div class="card-text">صاحب يراجع معك ويراك إذا فترت؛ المتابعة تصنع استمرارية قوية.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">🧾</div><div class="card-title">لوحة إنجاز</div><div class="card-text">ضع جدولًا بسيطًا: جديد اليوم، مراجعة اليوم، تسميع الأسبوع.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">🎁</div><div class="card-title">مكافأة مباحة</div><div class="card-text">بعد إتمام هدف أسبوعي، كافئ نفسك بشيء تحبه ليقترن الإنجاز بالسرور.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">📱</div><div class="card-title">استماع واحد متكرر</div><div class="card-text">اختر قارئًا واحدًا ورواية واحدة حتى يثبت الإيقاع واللفظ في ذهنك.</div></div>
+        <div class="glass reveal" style="padding:24px"><div class="icon">📍</div><div class="card-title">مصحف ثابت</div><div class="card-text">ثبات المصحف يساعد الذاكرة البصرية على استحضار موضع الآيات.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="7">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:380px;height:380px;top:-120px;left:-70px;background:var(--color-accent-3);opacity:.1"></div>
+      <div class="blob" style="width:260px;height:260px;bottom:-60px;right:-40px;background:var(--color-accent-1);opacity:.08"></div>
+      <div class="blob" style="width:180px;height:180px;top:50%;right:20%;background:var(--color-accent-2);opacity:.08"></div>
+    </div>
+    <canvas class="particle-canvas"></canvas>
+    <div class="content text-center">
+      <div class="pill reveal">6 · بطاقات قابلة للنشر</div>
+      <h2 class="section-title reveal">٣ رسائل قصيرة للمشاركة</h2>
+      <div class="cards-3">
+        <div class="glass reveal" style="padding:24px;text-align:right"><div class="card-title">بطاقة 1</div><div class="ayah" style="font-size:1.22rem">لا تنتظر فراغًا كاملًا لحفظ القرآن؛ اصنع له موعدًا صغيرًا ثابتًا يبارك الله فيه.</div></div>
+        <div class="glass reveal" style="padding:24px;text-align:right"><div class="card-title">بطاقة 2</div><div class="ayah" style="font-size:1.22rem">إذا ثقل عليك الحفظ اليوم، فلا تترك المراجعة؛ فالعودة إلى القديم تحفظ حرارة الطريق.</div></div>
+        <div class="glass reveal" style="padding:24px;text-align:right"><div class="card-title">بطاقة 3</div><div class="ayah" style="font-size:1.22rem">أهل القرآن لا يكبرون بالسرعة، بل يكبرون بالثبات والصدق وكثرة الرجوع إلى كتاب الله.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="8">
+    <div class="gradient-mesh">
+      <div class="blob" style="width:460px;height:460px;top:-110px;right:-90px;background:var(--color-accent-1);opacity:.15"></div>
+      <div class="blob" style="width:320px;height:320px;bottom:-80px;left:-60px;background:var(--color-accent-2);opacity:.12"></div>
+      <div class="blob" style="width:220px;height:220px;top:44%;left:18%;background:var(--color-accent-3);opacity:.1"></div>
+    </div>
+    <canvas class="particle-canvas"></canvas>
+    <div class="content text-center">
+      <div class="hero-emoji reveal">🌙</div>
+      <h2 class="closing reveal" style="margin:0;background:linear-gradient(135deg,var(--color-accent-1),var(--color-accent-2),#fff);-webkit-background-clip:text;background-clip:text;color:transparent">اخدم القرآن كل يوم</h2>
+      <p class="reveal" style="font-size:1.2rem;color:var(--color-text-secondary);max-width:760px;margin:14px auto 0;line-height:1.8">خمس دقائق صادقة كل يوم قد تصنع في عام واحد ما لا تصنعه قفزات الحماس المتقطعة.</p>
+      <div class="glass reveal" style="padding:18px 24px;display:inline-block;margin-top:22px;font-size:1.18rem">شارك هذه الشرائح كما هي، أو حوّل كل شريحة إلى بطاقة منفردة لمن حولك.</div>
+    </div>
+  </section>
+</div>
+
+<div class="nav-controls" aria-label="التحكم في الشرائح">
+  <button class="nav-btn" aria-label="السابق" onclick="changeSlide(-1)">‹</button>
+  <div class="slide-dots" id="dots"></div>
+  <button class="nav-btn" aria-label="التالي" onclick="changeSlide(1)">›</button>
+  <span class="slide-counter" id="counter">1 / 8</span>
+</div>
+
+<script>
+let current=1; const total=document.querySelectorAll('.slide').length; const dotsContainer=document.getElementById('dots'); const counter=document.getElementById('counter');
+for(let i=1;i<=total;i++){const dot=document.createElement('div');dot.className='dot'+(i===1?' active':'');dot.onclick=()=>goToSlide(i);dotsContainer.appendChild(dot)}
+function goToSlide(n){const prev=document.querySelector('.slide.active');const next=document.querySelector(`.slide[data-slide="${n}"]`);if(prev)prev.classList.remove('active');if(next){next.classList.add('active');animateSlide(next)}current=n;updateNav()}
+function changeSlide(dir){let next=current+dir;if(next<1)next=total;if(next>total)next=1;goToSlide(next)}
+function updateNav(){document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));counter.textContent=`${current} / ${total}`}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)} if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}})
+let touchStartX=0; document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX}); document.addEventListener('touchend',e=>{const diff=touchStartX-e.changedTouches[0].clientX; if(Math.abs(diff)>50) changeSlide(diff>0?1:-1)})
+function animateSlide(slide){slide.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(20px)';el.offsetHeight;const delay=i*0.08;el.style.transition=`opacity .4s ease ${delay}s, transform .4s ease ${delay}s`;el.style.opacity='1';el.style.transform='translateY(0)'});animateSlideEffects(slide)}
+function animateSlideEffects(slide){slide.querySelectorAll('.bar-fill:not(.fill-init)').forEach((bar,i)=>{bar.classList.add('fill-init');bar.style.transition=`width .7s ease ${i*0.1}s`;bar.style.width=bar.dataset.width+'%'})}
+document.addEventListener('mousemove',e=>{const s=document.querySelector('.mouse-spotlight');if(s){s.style.background=`radial-gradient(520px circle at ${e.clientX}px ${e.clientY}px, rgba(34,197,94,.06), transparent 40%)`}})
+window.initParticles=function(canvas,options){if(!canvas)return;const ctx=canvas.getContext('2d');canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;const interactive=options.interactive!==false;const count=options.count||30;let mx=-1000,my=-1000;const particles=Array.from({length:count},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,size:Math.random()*2.3+.8,alpha:Math.random()*.35+.08}));if(interactive){canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});canvas.addEventListener('mouseleave',()=>{mx=-1000;my=-1000})}(function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const force=(120-dist)/120*2;p.vx+=(dx/dist)*force*.08;p.vy+=(dy/dist)*force*.08}}p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(34,197,94,${p.alpha})`;ctx.fill()});requestAnimationFrame(animate)})()}
+document.querySelectorAll('.particle-canvas').forEach(c=>window.initParticles(c,{interactive:true,count:42})); document.querySelectorAll('.particle-canvas-ambient').forEach(c=>window.initParticles(c,{interactive:false,count:16}));
+animateSlide(document.querySelector('.slide.active'));
+</script>
+</body>
+</html>
