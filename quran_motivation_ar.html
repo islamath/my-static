@@ -83,28 +83,51 @@
       .bar-row{grid-template-columns:100px 1fr 48px}
       .hero-emoji{font-size:88px}
     }
+    @media (max-width: 640px){
+      .slide{align-items:flex-start;overflow-y:auto}
+      .slide>.content{padding:clamp(.9rem,4vw,1.3rem);padding-bottom:72px;max-width:100%}
+      .section-title{font-size:clamp(1.4rem,5.5vw,1.9rem)}
+      .section-sub{font-size:.92rem}
+      .card-title{font-size:.98rem;margin-bottom:.3rem}
+      .card-text{font-size:.9rem;line-height:1.6}
+      .icon{font-size:1.5rem;margin-bottom:.35rem}
+      .pill{font-size:.78rem;padding:.26rem .55rem}
+      .ayah{line-height:1.65;font-size:.95rem}
+      .cards-3,.cards-2{gap:10px;margin-top:14px}
+      .metric-grid{gap:10px;margin-top:14px}
+      .infobox{gap:14px;margin-top:14px}
+      .glass{border-radius:16px}
+      .circle{width:160px;height:160px}
+      .circle-inner{width:112px;height:112px}
+      .closing{font-size:1.8rem}
+      .timeline{padding-right:22px;margin-top:16px}
+      .timeline:before{right:8px}
+      .t-item{padding:10px 12px;margin-bottom:10px}
+      .t-item:before{right:-25px;width:12px;height:12px}
+      .bar-row{grid-template-columns:72px 1fr 36px;gap:8px;margin-top:10px}
+      .bar-track{height:14px}
+      .nav-controls{padding:7px 12px;gap:8px;bottom:12px}
+      .nav-btn{width:32px;height:32px;font-size:1rem}
+      .dot{width:7px;height:7px;gap:6px}
+      .slide-dots{gap:6px}
+      .slide-counter{font-size:.72rem;min-width:32px}
+    }
+    @media (max-width: 400px){
+      .section-title{font-size:1.25rem}
+      .section-sub{font-size:.87rem}
+      .card-title{font-size:.92rem}
+      .card-text{font-size:.85rem}
+      .circle{width:130px;height:130px}
+      .circle-inner{width:90px;height:90px}
+      .closing{font-size:1.5rem}
+      .bar-row{grid-template-columns:62px 1fr 32px}
+    }
   </style>
 </head>
 <body>
 <div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none"></div>
 <div class="deck">
   <section class="slide active" data-slide="1">
-    <div class="gradient-mesh">
-      <div class="blob" style="width:460px;height:460px;top:-120px;left:-90px;background:var(--color-accent-1);opacity:.15"></div>
-      <div class="blob" style="width:320px;height:320px;bottom:-90px;right:-40px;background:var(--color-accent-2);opacity:.12"></div>
-      <div class="blob" style="width:240px;height:240px;top:38%;right:14%;background:var(--color-accent-3);opacity:.1"></div>
-      <div class="blob" style="width:180px;height:180px;bottom:18%;left:20%;background:#a78bfa;opacity:.08"></div>
-    </div>
-    <canvas class="particle-canvas"></canvas>
-    <div class="content text-center">
-      <div class="hero-emoji reveal">📖</div>
-      <div class="pill reveal">بطاقات عربية جاهزة للمشاركة</div>
-      <h1 class="reveal" style="font-family:'Cairo',sans-serif;font-weight:800;font-size:clamp(2.4rem,6vw,5rem);line-height:1.15;margin:.8rem 0 1rem;background:linear-gradient(135deg,var(--color-accent-1),var(--color-accent-2),#fff3c4);-webkit-background-clip:text;background-clip:text;color:transparent">محفزات يومية لطالب حفظ القرآن ولحافظه</h1>
-      <p class="reveal" style="font-size:1.15rem;letter-spacing:.08em;color:var(--color-text-muted);font-family:'Cairo',sans-serif">أفكار إيمانية وعملية ونفسية في هيئة شرائح وبطاقات إنفوجرافية</p>
-    </div>
-  </section>
-
-  <section class="slide" data-slide="2">
     <div class="gradient-mesh">
       <div class="blob" style="width:340px;height:340px;top:-80px;right:-70px;background:var(--color-accent-1);opacity:.08"></div>
       <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-50px;background:var(--color-accent-3);opacity:.07"></div>
@@ -122,7 +145,7 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="3">
+  <section class="slide" data-slide="2">
     <div class="gradient-mesh">
       <div class="blob" style="width:300px;height:300px;top:-50px;left:-60px;background:var(--color-accent-2);opacity:.08"></div>
       <div class="blob" style="width:230px;height:230px;bottom:-40px;right:-30px;background:var(--color-accent-1);opacity:.06"></div>
@@ -146,7 +169,7 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="4">
+  <section class="slide" data-slide="3">
     <div class="gradient-mesh">
       <div class="blob" style="width:320px;height:320px;top:-80px;right:-50px;background:var(--color-accent-3);opacity:.09"></div>
       <div class="blob" style="width:260px;height:260px;bottom:-70px;left:-40px;background:var(--color-accent-1);opacity:.07"></div>
@@ -172,7 +195,7 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="5">
+  <section class="slide" data-slide="4">
     <div class="gradient-mesh">
       <div class="blob" style="width:350px;height:350px;top:-100px;left:-80px;background:var(--color-accent-1);opacity:.09"></div>
       <div class="blob" style="width:240px;height:240px;bottom:-50px;right:-20px;background:var(--color-accent-2);opacity:.08"></div>
@@ -196,7 +219,7 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="6">
+  <section class="slide" data-slide="5">
     <div class="gradient-mesh">
       <div class="blob" style="width:320px;height:320px;top:-60px;right:-80px;background:var(--color-accent-2);opacity:.08"></div>
       <div class="blob" style="width:250px;height:250px;bottom:-70px;left:-30px;background:var(--color-accent-3);opacity:.07"></div>
@@ -215,7 +238,7 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="7">
+  <section class="slide" data-slide="6">
     <div class="gradient-mesh">
       <div class="blob" style="width:380px;height:380px;top:-120px;left:-70px;background:var(--color-accent-3);opacity:.1"></div>
       <div class="blob" style="width:260px;height:260px;bottom:-60px;right:-40px;background:var(--color-accent-1);opacity:.08"></div>
@@ -233,27 +256,13 @@
     </div>
   </section>
 
-  <section class="slide" data-slide="8">
-    <div class="gradient-mesh">
-      <div class="blob" style="width:460px;height:460px;top:-110px;right:-90px;background:var(--color-accent-1);opacity:.15"></div>
-      <div class="blob" style="width:320px;height:320px;bottom:-80px;left:-60px;background:var(--color-accent-2);opacity:.12"></div>
-      <div class="blob" style="width:220px;height:220px;top:44%;left:18%;background:var(--color-accent-3);opacity:.1"></div>
-    </div>
-    <canvas class="particle-canvas"></canvas>
-    <div class="content text-center">
-      <div class="hero-emoji reveal">🌙</div>
-      <h2 class="closing reveal" style="margin:0;background:linear-gradient(135deg,var(--color-accent-1),var(--color-accent-2),#fff);-webkit-background-clip:text;background-clip:text;color:transparent">اخدم القرآن كل يوم</h2>
-      <p class="reveal" style="font-size:1.2rem;color:var(--color-text-secondary);max-width:760px;margin:14px auto 0;line-height:1.8">خمس دقائق صادقة كل يوم قد تصنع في عام واحد ما لا تصنعه قفزات الحماس المتقطعة.</p>
-      <div class="glass reveal" style="padding:18px 24px;display:inline-block;margin-top:22px;font-size:1.18rem">شارك هذه الشرائح كما هي، أو حوّل كل شريحة إلى بطاقة منفردة لمن حولك.</div>
-    </div>
-  </section>
 </div>
 
 <div class="nav-controls" aria-label="التحكم في الشرائح">
   <button class="nav-btn" aria-label="السابق" onclick="changeSlide(-1)">‹</button>
   <div class="slide-dots" id="dots"></div>
   <button class="nav-btn" aria-label="التالي" onclick="changeSlide(1)">›</button>
-  <span class="slide-counter" id="counter">1 / 8</span>
+  <span class="slide-counter" id="counter">1 / 6</span>
 </div>
 
 <script>
