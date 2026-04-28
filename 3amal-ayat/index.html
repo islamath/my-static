@@ -19,6 +19,7 @@
       --done-bg:  #EAF4F4;
       --done-txt: #4F9A90;
       --shadow:   0 2px 12px rgba(0,0,0,0.07);
+      --sidebar-header-h: 84px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -445,7 +446,7 @@
         border-bottom: 1px solid var(--border);
       }
       #surahList {
-        max-height: calc(55vh - 84px);
+        max-height: calc(55vh - var(--sidebar-header-h));
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
@@ -548,6 +549,8 @@ let currentSurah = null;
 let currentFilter = 'all';
 let globalSearchMode = false;
 let globalSearchResults = [];
+
+const MOBILE_BREAKPOINT = 720;
 
 // State management — in-memory only
 let doneState = {};
@@ -704,7 +707,7 @@ function selectSurah(num, keepFilter=false) {
   renderItems(surah.items, `سورة ${surah.name}`, `${surah.items.length} عمل · ${done} مكتمل`);
   buildSidebar(document.getElementById('sidebarSearch').value);
   // Close sidebar on mobile after selecting a surah
-  if (window.innerWidth <= 720) {
+  if (window.innerWidth <= MOBILE_BREAKPOINT) {
     const sidebar = document.getElementById('sidebar');
     const btn = document.getElementById('sidebarToggle');
     sidebar.classList.remove('sidebar-open');
