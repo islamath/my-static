@@ -19,6 +19,7 @@
       --done-bg:  #EAF4F4;
       --done-txt: #4F9A90;
       --shadow:   0 2px 12px rgba(0,0,0,0.07);
+      --sidebar-header-h: 84px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -384,20 +385,101 @@
     .welcome h2 { font-size: 1.4rem; color: var(--text); margin-bottom: 10px; }
     .welcome p { font-size: 0.95rem; line-height: 1.8; }
 
+    /* ── SIDEBAR TOGGLE (mobile only) ── */
+    .sidebar-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s;
+    }
+    .sidebar-toggle:hover { background: rgba(255,255,255,0.32); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 720px) {
+      /* Prevent horizontal overflow */
+      body { overflow-x: hidden; }
+
+      /* Header */
+      header { padding: 0 14px; }
+      .header-inner {
+        height: auto;
+        min-height: 52px;
+        padding: 10px 0;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .header-title { font-size: 1.05rem; }
+      .progress-bar-wrap { width: 110px; }
+      .header-stats { font-size: 0.75rem; padding: 3px 8px; }
+      .sidebar-toggle { display: flex; }
+
+      /* Global search */
+      .global-search { padding: 10px 12px 0; }
+      .global-search input { font-size: 0.95rem; padding: 9px 14px; }
+
+      /* Layout */
       .layout { grid-template-columns: 1fr; }
+
+      /* Sidebar — collapsed by default on mobile */
       aside {
         position: relative;
         top: 0;
         height: auto;
-        max-height: 260px;
+        max-height: 0;
+        overflow: hidden;
         border-left: none;
+        border-bottom: none;
+        transition: max-height 0.3s ease;
+      }
+      aside.sidebar-open {
+        max-height: 55vh;
+        overflow: hidden;
         border-bottom: 1px solid var(--border);
       }
-      #surahList { max-height: 180px; }
-      main { padding: 16px; }
-      .global-search { padding: 12px 16px 0; }
+      #surahList {
+        max-height: calc(55vh - var(--sidebar-header-h));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Main */
+      main { padding: 12px 14px; }
+      .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .surah-title { font-size: 1.25rem; }
+      .filter-tabs { width: 100%; }
+      .filter-tab { flex: 1; text-align: center; padding: 7px 8px; font-size: 0.8rem; }
+
+      /* Item cards */
+      .item-card { padding: 12px 12px; gap: 10px; }
+      .item-check { width: 24px; height: 24px; min-width: 24px; }
+      .item-text { font-size: 1rem; line-height: 1.75; }
+      .item-ref { font-size: 0.85rem; }
+
+      /* Welcome */
+      .welcome { padding: 40px 16px; }
+      .welcome h2 { font-size: 1.15rem; }
+
+      /* Surah list items — bigger touch targets */
+      .surah-btn { padding: 10px 14px; min-height: 52px; }
+    }
+
+    @media (max-width: 400px) {
+      .header-title { font-size: 0.95rem; }
+      .progress-bar-wrap { display: none; }
+      .header-stats { font-size: 0.72rem; }
     }
   </style>
 </head>
@@ -405,6 +487,11 @@
 
 <header>
   <div class="header-inner">
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="تبديل القائمة الجانبية" aria-expanded="false" aria-controls="sidebar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
     <div class="header-title">📖 العمل بالآيات</div>
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="globalProgressFill" style="width:0%"></div>
@@ -463,6 +550,8 @@ let currentFilter = 'all';
 let globalSearchMode = false;
 let globalSearchResults = [];
 
+const MOBILE_BREAKPOINT = 720;
+
 // State management — in-memory only
 let doneState = {};
 function saveState(state) { /* session only */ }
@@ -478,6 +567,14 @@ function totalDone() { return Object.keys(doneState).length; }
 
 function surahDone(surah) {
   return surah.items.filter(i => isDone(i.id)).length;
+}
+
+// Sidebar toggle for mobile
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  const isOpen = sidebar.classList.toggle('sidebar-open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
 // Build sidebar
@@ -609,6 +706,13 @@ function selectSurah(num, keepFilter=false) {
   const done = surahDone(surah);
   renderItems(surah.items, `سورة ${surah.name}`, `${surah.items.length} عمل · ${done} مكتمل`);
   buildSidebar(document.getElementById('sidebarSearch').value);
+  // Close sidebar on mobile after selecting a surah
+  if (window.innerWidth <= MOBILE_BREAKPOINT) {
+    const sidebar = document.getElementById('sidebar');
+    const btn = document.getElementById('sidebarToggle');
+    sidebar.classList.remove('sidebar-open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
 }
 
 function setFilter(f, btn) {
