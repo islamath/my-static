@@ -1,0 +1,21 @@
+{
+  "name": "العمل بالآيات",
+  "short_name": "آيات",
+  "description": "تطبيق للعمل بآيات القرآن الكريم — تدبر وعمل",
+  "start_url": "/3amal-ayat/",
+  "scope": "/3amal-ayat/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F7F6F2",
+  "theme_color": "#01696F",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
