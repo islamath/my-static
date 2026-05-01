@@ -2,8 +2,8 @@
   "name": "محفزات يومية لطالب حفظ القرآن",
   "short_name": "محفزات القرآن",
   "description": "محفزات يومية لطالب حفظ القرآن ولحافظه",
-  "start_url": "/quran_motivation_ar.html",
-  "scope": "/",
+  "start_url": "./quran_motivation_ar.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0f172a",
@@ -12,7 +12,7 @@
   "lang": "ar",
   "icons": [
     {
-      "src": "/icons/icon.svg",
+      "src": "./icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

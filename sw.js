@@ -1,14 +1,14 @@
 const CACHE = 'quran-pwa-v1';
 const SHELL = [
-  '/favicon.svg',
-  '/icons/icon.svg',
-  '/manifest.json',
-  '/quran_motivation_ar.html',
-  '/3amal-ayat/',
-  '/3amal-ayat/index.html',
-  '/3amal-ayat/manifest.json',
-  '/3amal-ayat/amal_data.json',
-  '/3amal-ayat/quran-tadabbur-wa-amal.svg',
+  './favicon.svg',
+  './icons/icon.svg',
+  './manifest.json',
+  './quran_motivation_ar.html',
+  './3amal-ayat/',
+  './3amal-ayat/index.html',
+  './3amal-ayat/manifest.json',
+  './3amal-ayat/amal_data.json',
+  './3amal-ayat/quran-tadabbur-wa-amal.svg',
 ];
 
 self.addEventListener('install', event => {
@@ -46,8 +46,8 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // Offline fallback: serve cached page for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/3amal-ayat/index.html')
-            .then(r => r || caches.match('/quran_motivation_ar.html'));
+          return caches.match(new URL('./3amal-ayat/index.html', self.location).href)
+            .then(r => r || caches.match(new URL('./quran_motivation_ar.html', self.location).href));
         }
       });
     })
