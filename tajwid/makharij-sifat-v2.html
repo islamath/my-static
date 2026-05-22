@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار مخارج وصفات الحروف</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .instructions {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .mobile-quiz {
+            display: none;
+        }
+
+        .mobile-group {
+            border: 1px solid #d9e1f8;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .mobile-group summary {
+            list-style: none;
+            cursor: pointer;
+            background: #f3f6ff;
+            color: #324b7d;
+            padding: 10px 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .mobile-group-cards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-group-cards .mobile-letter-card {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            margin: 0;
+        }
+        .mobile-carousel-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px 10px;
+        }
+
+        .mobile-nav-btn {
+            border: 1px solid #ccd7f8;
+            background: #ffffff;
+            color: #445fc6;
+            border-radius: 999px;
+            min-width: 74px;
+            height: 34px;
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .mobile-nav-btn:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .mobile-swipe-hint {
+            color: #67769a;
+            font-size: 11px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .mobile-group summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .mobile-group summary::before {
+            content: '▸';
+            color: #4a63c5;
+            font-size: 13px;
+            transition: transform 0.18s ease;
+        }
+
+        .mobile-group[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .mobile-group[open] summary {
+            border-bottom: 1px solid #e2e8fb;
+        }
+
+        .mobile-group-count {
+            color: #5f6f93;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mobile-group-cards {
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+
+        th {
+            background: #366092;
+            color: white;
+            padding: 12px 8px;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            border: 1px solid #ddd;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .char-cell {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            width: 50px;
+            min-width: 50px;
+            position: relative;
+            overflow: visible;
+            padding: 0;
+        }
+
+        .letter-trigger {
+            width: 100%;
+            min-height: 44px;
+            border: none;
+            background: transparent;
+            color: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            cursor: zoom-in;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            font-family: inherit;
+        }
+
+        .letter-trigger:focus-visible {
+            outline: 2px solid #667eea;
+            outline-offset: -2px;
+            border-radius: 6px;
+        }
+
+        .makhraj-popover {
+            position: absolute;
+            top: 50%;
+            right: calc(100% + 12px);
+            transform: translate(8px, -50%);
+            width: 360px;
+            max-width: min(360px, 80vw);
+            background: #ffffff;
+            border: 1px solid #d7def5;
+            border-radius: 10px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+            padding: 6px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+            z-index: 100;
+        }
+
+        .makhraj-popover::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            transform: translateY(-50%);
+            border-width: 7px 0 7px 7px;
+            border-style: solid;
+            border-color: transparent transparent transparent #ffffff;
+        }
+
+        .makhraj-popover img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            display: block;
+            object-fit: cover;
+        }
+
+        .char-cell:hover .makhraj-popover,
+        .char-cell:focus-within .makhraj-popover,
+        .char-cell.is-open .makhraj-popover {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(0, -50%);
+            pointer-events: auto;
+        }
+
+        .makhraj-cell {
+            background: #f5f5f5;
+            font-weight: bold;
+            color: #333;
+            width: 100px;
+            min-width: 100px;
+            text-align: right;
+            padding-right: 15px;
+        }
+
+        .submakhraj-cell {
+            background: #fafafa;
+            color: #666;
+            width: 120px;
+            min-width: 120px;
+            text-align: right;
+            padding-right: 15px;
+            font-size: 12px;
+        }
+
+        .status-cell {
+            background: #f9f9f9;
+            width: 40px;
+            min-width: 40px;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+
+        .status-indicator.pending {
+            background: #ddd;
+        }
+
+        .status-indicator.correct {
+            background: #4caf50;
+        }
+
+        .status-indicator.incorrect {
+            background: #f44336;
+        }
+
+        .attr-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        tr:hover {
+            background: #f5f9ff;
+        }
+
+        tr.correct-row {
+            background: #e8f5e9;
+        }
+
+        tr.incorrect-row {
+            background: #ffebee;
+        }
+
+        .hint-cell {
+            background: #fff3e0 !important;
+        }
+
+        .wrong-cell {
+            background: #ffcdd2 !important;
+        }
+
+        .makhraj-section {
+            background: #e3f2fd;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+
+        .btn-hint {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-hint:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
+
+        .mobile-letter-card {
+            background: #fbfcff;
+            border: 1px solid #dde4fb;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .mobile-letter-card.mobile-correct {
+            border-color: #66bb6a;
+            background: #effaf1;
+        }
+
+        .mobile-letter-card.mobile-incorrect {
+            border-color: #ef5350;
+            background: #fff3f3;
+        }
+
+        .mobile-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .mobile-card-letter-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .mobile-letter-trigger {
+            width: 56px;
+            min-width: 56px;
+            min-height: 56px;
+            border: 1px solid #d7def5;
+            border-radius: 10px;
+            background: #ffffff;
+            font-size: 28px;
+        }
+
+        .mobile-char-cell {
+            width: auto;
+            min-width: 0;
+        }
+
+        .mobile-makhraj-meta {
+            text-align: right;
+            line-height: 1.5;
+            min-width: 0;
+        }
+
+        .mobile-general {
+            font-weight: bold;
+            color: #324b7d;
+            font-size: 13px;
+        }
+
+        .mobile-special {
+            color: #5e6f90;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .mobile-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: bold;
+            color: #fff;
+            background: #c7c7c7;
+            flex-shrink: 0;
+        }
+
+        .mobile-status-indicator.correct {
+            background: #4caf50;
+        }
+
+        .mobile-status-indicator.incorrect {
+            background: #f44336;
+        }
+
+        .mobile-attrs-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mobile-segment-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mobile-segment-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .mobile-segment-title {
+            color: #637299;
+            font-size: 11px;
+            font-weight: 700;
+            padding-inline: 2px;
+        }
+
+        .mobile-segment-track {
+            display: flex;
+            border: 1px solid #d6ddf6;
+            border-radius: 11px;
+            overflow: hidden;
+            background: #f7f9ff;
+        }
+
+        .mobile-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mobile-attr-btn {
+            border: 1px solid #d8def4;
+            background: #f7f9ff;
+            color: #2f3b66;
+            min-height: 40px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+        }
+
+        .mobile-segment-btn {
+            flex: 1;
+            border: none;
+            border-inline-start: 1px solid #d6ddf6;
+            border-radius: 0;
+            min-height: 38px;
+            font-size: 12px;
+            background: transparent;
+        }
+
+        .mobile-segment-track .mobile-segment-btn:first-child {
+            border-inline-start: none;
+        }
+
+        .mobile-chip-btn {
+            border-radius: 999px;
+            min-height: 36px;
+            padding: 7px 12px;
+            font-size: 12px;
+            background: #f5f5f5;
+            border-color: #d8d8d8;
+        }
+
+        .mobile-attr-btn.group-1 {
+            background: #e3f2fd;
+        }
+
+        .mobile-attr-btn.group-2 {
+            background: #fce4ec;
+        }
+
+        .mobile-attr-btn.group-3 {
+            background: #f3e5f5;
+        }
+
+        .mobile-attr-btn.group-4 {
+            background: #e0f2f1;
+        }
+
+        .mobile-attr-btn.group-5 {
+            background: #fff8e1;
+        }
+
+        .mobile-attr-btn.group-neutral {
+            background: #f5f5f5;
+        }
+
+        .mobile-attr-btn.is-active {
+            border-color: #4f6edb;
+            box-shadow: inset 0 0 0 2px #4f6edb;
+        }
+
+        .mobile-segment-btn.is-active {
+            background: #dbe8ff !important;
+            color: #203a84;
+            border-radius: 0;
+        }
+
+        .mobile-segment-track .mobile-segment-btn:first-child.is-active {
+            border-start-start-radius: 10px;
+            border-end-start-radius: 10px;
+        }
+
+        .mobile-segment-track .mobile-segment-btn:last-child.is-active {
+            border-start-end-radius: 10px;
+            border-end-end-radius: 10px;
+        }
+
+        .mobile-segment-track .mobile-segment-btn:only-child.is-active {
+            border-radius: 10px;
+        }
+
+        .mobile-chip-btn.is-active {
+            background: #e0e9ff;
+            border-radius: 999px;
+        }
+
+        .mobile-attr-btn.is-wrong {
+            background: #ffcdd2 !important;
+            border-color: #ef5350;
+            box-shadow: none;
+        }
+
+        .mobile-attr-btn.is-hint {
+            background: #fff3e0 !important;
+            border-color: #ff9800;
+            box-shadow: none;
+        }
+
+        .results {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .score-box {
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-circle.excellent {
+            background: #4caf50;
+        }
+
+        .score-circle.good {
+            background: #8bc34a;
+        }
+
+        .score-circle.fair {
+            background: #ff9800;
+        }
+
+        .score-circle.poor {
+            background: #f44336;
+        }
+
+        .score-label {
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .result-details {
+            margin-top: 15px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .result-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 13px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 16px 12px calc(122px + env(safe-area-inset-bottom));
+            }
+            .table-wrapper {
+                display: none;
+            }
+
+            .mobile-quiz {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            th,
+            td {
+                font-size: 12px;
+                padding: 8px 5px;
+                white-space: nowrap;
+            }
+
+            .char-cell {
+                font-size: 20px;
+                min-width: 56px;
+            }
+
+            .letter-trigger {
+                min-height: 48px;
+            }
+
+            .makhraj-popover {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                right: auto;
+                width: min(92vw, 420px);
+                max-width: none;
+                max-height: 80vh;
+                transform: translate(-50%, -46%);
+                padding: 8px;
+                border-radius: 12px;
+                z-index: 120;
+            }
+
+            .makhraj-popover::after {
+                display: none;
+            }
+
+            .makhraj-popover img {
+                max-height: 75vh;
+                object-fit: contain;
+            }
+
+            .char-cell:hover .makhraj-popover,
+            .char-cell:focus-within .makhraj-popover,
+            .char-cell.is-open .makhraj-popover {
+                transform: translate(-50%, -50%);
+            }
+
+            body.popover-open {
+                overflow: hidden;
+            }
+
+            body.popover-open::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.45);
+                z-index: 110;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .legend,
+            .legend-groups {
+                font-size: 12px;
+            }
+
+            .controls {
+                gap: 10px;
+                position: sticky;
+                bottom: calc(8px + env(safe-area-inset-bottom));
+                margin-top: 14px;
+                padding: 10px;
+                border-top: 1px solid #dfe5f7;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.96);
+                backdrop-filter: blur(6px);
+                z-index: 90;
+            }
+
+            .controls button {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 135px;
+                font-size: 14px;
+                padding: 11px 10px;
+            }
+
+            .results {
+                margin-bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .legend-box.correct {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .legend-box.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        .legend-box.hint {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        /* Color coding for mutual exclusion groups */
+        .group-1 {
+            background: #e3f2fd !important;
+        }
+
+        .group-2 {
+            background: #fce4ec !important;
+        }
+
+        .group-3 {
+            background: #f3e5f5 !important;
+        }
+
+        .group-4 {
+            background: #e0f2f1 !important;
+        }
+
+        .group-5 {
+            background: #fff8e1 !important;
+        }
+
+        .group-neutral {
+            background: #f5f5f5 !important;
+        }
+
+        .legend-groups {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .legend-group-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .legend-group-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 اختبار مخارج وصفات الحروف العربية</h1>
+            <p class="subtitle">اختبر معرفتك بمخارج وصفات الحروف - علم التجويد</p>
+        </header>
+
+        <div class="instructions">
+            <strong>📋 الإرشادات:</strong>
+            <br>الجدول يعرض جميع الحروف العربية (31 حرف) مع مخارجها العامة والخاصة. اختر الصفات الصحيحة لكل حرف بوضع علامة صح (✓) في المربعات المناسبة. بعد الانتهاء، اضغط "تحقق من الإجابات" لرؤية نتيجتك.
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box correct"></div>
+                <span>إجابة صحيحة</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box incorrect"></div>
+                <span>إجابة خاطئة</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box hint"></div>
+                <span>إجابة مفقودة</span>
+            </div>
+        </div>
+
+        <div class="legend-groups">
+            <div class="legend-group-item">
+                <div class="legend-group-box group-1"></div>
+                <span>الجهر ↔ الهمس</span>
+            </div>
+            <div class="legend-group-item">
+                <div class="legend-group-box group-2"></div>
+                <span>الشدة ↔ البينية ↔ الرخاوة</span>
+            </div>
+            <div class="legend-group-item">
+                <div class="legend-group-box group-3"></div>
+                <span>الاستعلاء ↔ الاستفال</span>
+            </div>
+            <div class="legend-group-item">
+                <div class="legend-group-box group-4"></div>
+                <span>الإطباق ↔ الانفتاح</span>
+            </div>
+            <div class="legend-group-item">
+                <div class="legend-group-box group-5"></div>
+                <span>الإصمات ↔ الإذلاق</span>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="quizTable">
+                <thead>
+                    <tr>
+                        <th colspan="4">الحروف والمخارج</th>
+                        <th colspan="17">الصفات</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 50px;">الحرف</th>
+                        <th style="width: 100px;">المخرج العام</th>
+                        <th style="width: 120px;">المخرج الخاص</th>
+                        <th style="width: 40px;">✓</th>
+                        <th style="width: 55px;">الجهر</th>
+                        <th style="width: 55px;">الهمس</th>
+                        <th style="width: 55px;">الشدة</th>
+                        <th style="width: 55px;">الرخاوة</th>
+                        <th style="width: 55px;">البينية</th>
+                        <th style="width: 55px;">الاستعلاء</th>
+                        <th style="width: 55px;">الاستفال</th>
+                        <th style="width: 55px;">الإطباق</th>
+                        <th style="width: 55px;">الانفتاح</th>
+                        <th style="width: 55px;">الإذلاق</th>
+                        <th style="width: 55px;">الإصمات</th>
+                        <th style="width: 55px;">الصفير</th>
+                        <th style="width: 55px;">القلقلة</th>
+                        <th style="width: 55px;">اللين</th>
+                        <th style="width: 55px;">الانحراف</th>
+                        <th style="width: 55px;">التكرير</th>
+                        <th style="width: 55px;">التفشي</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="mobileQuiz" class="mobile-quiz"></div>
+
+        <div class="controls">
+            <button class="btn-submit" onclick="submitQuiz()">تحقق من الإجابات</button>
+            <button class="btn-hint" onclick="showHints()">اعرض التلميحات</button>
+            <button class="btn-reset" onclick="resetQuiz()">إعادة تعيين</button>
+        </div>
+
+        <div class="results" id="results">
+            <h2>📊 نتائجك</h2>
+            <div class="score-display">
+                <div class="score-box">
+                    <div class="score-circle" id="scoreCircle">0%</div>
+                    <div class="score-label">النسبة المئوية</div>
+                </div>
+            </div>
+            <div class="result-details" id="resultDetails"></div>
+        </div>
+
+        <div class="footer">
+            <p>✨ تم إنشاء هذا الاختبار لتعزيز فهم طلاب التجويد لمخارج وصفات الحروف</p>
+        </div>
+    </div>
+
+    <script>
+        const ATTRIBUTES = [
+            "الجهر", "الهمس", "الشدة", "الرخاوة", "البينية",
+            "الاستعلاء", "الاستفال", "الإطباق", "الانفتاح", "الإذلاق",
+            "الإصمات", "الصفير", "القلقلة",
+            "اللين", "الانحراف", "التكرير", "التفشي"
+        ];
+
+        // Define mutually exclusive attribute pairs with color groups
+        // Format: {indices: [index1, index2, ...], colorClass: 'group-N'}
+        const MUTUAL_EXCLUSIONS = [
+            { indices: [0, 1], colorClass: 'group-1' },           // الجهر vs الهمس
+            { indices: [2, 3, 4], colorClass: 'group-2' },        // الشدة vs البينية vs الرخاوة (3-way)
+            { indices: [5, 6], colorClass: 'group-3' },           // الاستعلاء vs الاستفال
+            { indices: [7, 8], colorClass: 'group-4' },           // الإطباق vs الانفتاح
+            { indices: [10, 9], colorClass: 'group-5' }           // الإصمات vs الإذلاق
+        ];
+
+        // Neutral attributes (not in any exclusion group)
+        const NEUTRAL_ATTRIBUTES = [11, 12, 13, 14, 15, 16];     // الصفير, القلقلة, اللين, الانحراف, التكرير, التفشي
+
+        const CHARACTERS = [
+            { char: "ا", general: "الجوف", special: "خلاء الحلق والفم", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "و", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ي", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ء", general: "الحلق", special: "أقصى الحلق", attrs: [1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "هـ", general: "الحلق", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ع", general: "الحلق", special: "وسط الحلق", attrs: [1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ح", general: "الحلق", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "غ", general: "الحلق", special: "أدنى الحلق", attrs: [1,0,0,1,0,1,0,0,1,0,1,0,0,0,0,0,0] },
+            { char: "خ", general: "الحلق", special: "", attrs: [0,1,0,1,0,1,0,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ق", general: "اللسان", special: "أقصى اللسان", attrs: [1,0,1,0,0,1,0,0,1,0,1,0,1,0,0,0,0] },
+            { char: "ك", general: "اللسان", special: "", attrs: [0,1,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ج", general: "اللسان", special: "وسط اللسان", attrs: [1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0] },
+            { char: "ش", general: "اللسان", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,0,1] },
+            { char: "ي", general: "اللسان", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ض", general: "اللسان", special: "حافة اللسان", attrs: [1,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,1] },
+            { char: "ل", general: "اللسان", special: "", attrs: [1,0,0,0,1,0,1,0,1,1,0,0,0,0,1,0,0] },
+            { char: "ن", general: "اللسان", special: "طرف اللسان", attrs: [1,0,0,0,1,0,1,0,1,1,0,0,0,0,0,0,0] },
+            { char: "ر", general: "اللسان", special: "", attrs: [1,0,0,0,1,0,1,0,1,1,0,0,0,0,1,1,0] },
+            { char: "ط", general: "اللسان", special: "طرف (أصول الثنايا)", attrs: [1,0,1,0,0,1,0,1,0,0,1,0,1,0,0,0,0] },
+            { char: "د", general: "اللسان", special: "", attrs: [1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0] },
+            { char: "ت", general: "اللسان", special: "", attrs: [0,1,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ص", general: "اللسان", special: "طرف (فوق الثنايا)", attrs: [0,1,0,1,0,1,0,1,0,0,1,1,0,0,0,0,0] },
+            { char: "ز", general: "اللسان", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,1,0,0,0,0,0] },
+            { char: "س", general: "اللسان", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,1,0,0,0,0,0] },
+            { char: "ظ", general: "اللسان", special: "طرف (أطراف الثنايا)", attrs: [1,0,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0] },
+            { char: "ذ", general: "اللسان", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ث", general: "اللسان", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] },
+            { char: "ف", general: "الشفتان", special: "بطن الشفة السفلى", attrs: [0,1,0,1,0,0,1,0,1,1,0,0,0,0,0,0,0] },
+            { char: "ب", general: "الشفتان", special: "الشفتان معاً", attrs: [1,0,1,0,0,0,1,0,1,1,0,0,1,0,0,0,0] },
+            { char: "م", general: "الشفتان", special: "", attrs: [1,0,0,0,1,0,1,0,1,1,0,0,0,0,0,0,0] },
+            { char: "و", general: "الشفتان", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0] }
+        ];
+
+        const MAKHRAJ_IMAGE_BY_INDEX = [
+            "makhraj_08.jpg", "makhraj_09.jpg", "makhraj_10.jpg",
+            "makhraj_14.jpg", "makhraj_14.jpg",
+            "makhraj_15.jpg", "makhraj_15.jpg",
+            "makhraj_16.jpg", "makhraj_16.jpg",
+            "makhraj_17.jpg", "makhraj_18.jpg",
+            "makhraj_19.jpg", "makhraj_20.jpg", "makhraj_21.jpg",
+            "makhraj_23.jpg", "makhraj_25.jpg", "makhraj_28.jpg", "makhraj_29.jpg",
+            "makhraj_32.jpg", "makhraj_32.jpg", "makhraj_32.jpg",
+            "makhraj_33.jpg", "makhraj_33.jpg", "makhraj_33.jpg",
+            "makhraj_34.jpg", "makhraj_34.jpg", "makhraj_34.jpg",
+            "makhraj_35.jpg", "makhraj_37.jpg", "makhraj_38.jpg", "makhraj_36.jpg"
+        ];
+
+        function getMakhrajImagePath(index) {
+            const imageName = MAKHRAJ_IMAGE_BY_INDEX[index] || "makhraj_01.jpg";
+            return `images/${imageName}`;
+        }
+        function getEffectiveSpecialForIndex(index) {
+            const current = CHARACTERS[index];
+            if (!current) return '';
+
+            const ownSpecial = (current.special || '').trim();
+            if (ownSpecial !== '') return ownSpecial;
+
+            for (let i = index - 1; i >= 0; i--) {
+                const previous = CHARACTERS[i];
+                if (!previous || previous.general !== current.general) break;
+
+                const previousSpecial = (previous.special || '').trim();
+                if (previousSpecial !== '') return previousSpecial;
+            }
+
+            for (let i = index + 1; i < CHARACTERS.length; i++) {
+                const next = CHARACTERS[i];
+                if (!next || next.general !== current.general) break;
+
+                const nextSpecial = (next.special || '').trim();
+                if (nextSpecial !== '') return nextSpecial;
+            }
+
+            return '';
+        }
+
+        function getAttributeColorClass(attrIdx) {
+            let colorClass = 'group-neutral';
+            MUTUAL_EXCLUSIONS.forEach((group) => {
+                if (group.indices.includes(attrIdx)) {
+                    colorClass = group.colorClass;
+                }
+            });
+            return colorClass;
+        }
+
+        function setPopoverOpenState(isOpen) {
+            document.body.classList.toggle('popover-open', isOpen);
+        }
+
+        function closeAllLetterPopovers() {
+            document.querySelectorAll('.char-cell.is-open').forEach((cell) => {
+                cell.classList.remove('is-open');
+            });
+            setPopoverOpenState(false);
+        }
+
+        let popoverDocumentEventsBound = false;
+
+        function setupLetterPopovers() {
+            document.querySelectorAll('.letter-trigger').forEach((trigger) => {
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const cell = this.closest('.char-cell');
+                    const shouldOpen = !cell.classList.contains('is-open');
+                    closeAllLetterPopovers();
+                    if (shouldOpen) {
+                        cell.classList.add('is-open');
+                        setPopoverOpenState(true);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.makhraj-popover').forEach((popover) => {
+                popover.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                });
+            });
+
+            if (!popoverDocumentEventsBound) {
+                document.addEventListener('click', () => {
+                    closeAllLetterPopovers();
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        closeAllLetterPopovers();
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    closeAllLetterPopovers();
+                });
+
+                popoverDocumentEventsBound = true;
+            }
+        }
+
+        function createMobileCard(char, index) {
+            const imagePath = getMakhrajImagePath(index);
+            const popoverLabel = `صورة مخرج الحرف ${char.char}`;
+            const effectiveSpecial = getEffectiveSpecialForIndex(index);
+            const specialMarkup = `<div class="mobile-special">${effectiveSpecial}</div>`;
+            const segmentedMarkup = MUTUAL_EXCLUSIONS.map((group) => {
+                const groupLabel = group.indices.map((attrIdx) => ATTRIBUTES[attrIdx]).join(' / ');
+                const optionsMarkup = group.indices.map((attrIdx) => `
+                    <button
+                        type="button"
+                        id="mcb-${index}-${attrIdx}"
+                        class="mobile-attr-btn mobile-segment-btn ${group.colorClass}"
+                        data-char="${index}"
+                        data-attr="${attrIdx}"
+                        aria-pressed="false"
+                    >${ATTRIBUTES[attrIdx]}</button>
+                `).join('');
+                return `
+                    <div class="mobile-segment-group">
+                        <div class="mobile-segment-title">${groupLabel}</div>
+                        <div class="mobile-segment-track" role="group" aria-label="${groupLabel}">
+                            ${optionsMarkup}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const chipsMarkup = NEUTRAL_ATTRIBUTES.map((attrIdx) => `
+                <button
+                    type="button"
+                    id="mcb-${index}-${attrIdx}"
+                    class="mobile-attr-btn mobile-chip-btn ${getAttributeColorClass(attrIdx)}"
+                    data-char="${index}"
+                    data-attr="${attrIdx}"
+                    aria-pressed="false"
+                >${ATTRIBUTES[attrIdx]}</button>
+            `).join('');
+
+            const attrsMarkup = `
+                <div class="mobile-attrs-layout">
+                    <div class="mobile-segment-groups">${segmentedMarkup}</div>
+                    <div class="mobile-chip-list">${chipsMarkup}</div>
+                </div>
+            `;
+
+            const card = document.createElement('article');
+            card.className = 'mobile-letter-card';
+            card.id = `mobile-card-${index}`;
+            card.innerHTML = `
+                <div class="mobile-card-head">
+                    <div class="mobile-card-letter-wrap">
+                        <div class="char-cell mobile-char-cell">
+                            <button type="button" class="letter-trigger mobile-letter-trigger" aria-label="${popoverLabel}">${char.char}</button>
+                            <div class="makhraj-popover" role="tooltip">
+                                <img src="${imagePath}" alt="${popoverLabel}" loading="lazy" decoding="async">
+                            </div>
+                        </div>
+                        <div class="mobile-makhraj-meta">
+                            <div class="mobile-general">${char.general}</div>
+                            ${specialMarkup}
+                        </div>
+                    </div>
+                    <span class="mobile-status-indicator pending" id="mobile-status-${index}">○</span>
+                </div>
+                ${attrsMarkup}
+            `;
+
+            return card;
+        }
+
+        function initializeMobileQuiz() {
+            const mobileQuiz = document.getElementById('mobileQuiz');
+            if (!mobileQuiz) return;
+
+            mobileQuiz.innerHTML = '';
+
+            const groups = new Map();
+            CHARACTERS.forEach((char, index) => {
+                if (!groups.has(char.general)) {
+                    groups.set(char.general, []);
+                }
+                groups.get(char.general).push({ char, index });
+            });
+
+            groups.forEach((items, general) => {
+                const section = document.createElement('details');
+                section.className = 'mobile-group';
+                section.open = true;
+                section.innerHTML = `
+                    <summary>
+                        <span>${general}</span>
+                        <span class="mobile-group-count">${items.length} حرف</span>
+                    </summary>
+                    <div class="mobile-group-cards"></div>
+                    <div class="mobile-carousel-nav">
+                        <button type="button" class="mobile-nav-btn prev" aria-label="البطاقة السابقة"><span>السابق</span><span aria-hidden="true">▶</span></button>
+                        <div class="mobile-swipe-hint">↔ اسحب أو استخدم الأسهم</div>
+                        <button type="button" class="mobile-nav-btn next" aria-label="البطاقة التالية"><span aria-hidden="true">◀</span><span>التالي</span></button>
+                    </div>
+                `;
+
+                const cardsContainer = section.querySelector('.mobile-group-cards');
+                items.forEach(({ char, index }) => {
+                    cardsContainer.appendChild(createMobileCard(char, index));
+                });
+
+                mobileQuiz.appendChild(section);
+            });
+
+            bindMobileCardSelection();
+            bindMobileCarouselControls();
+        }
+
+        function bindMobileCardSelection() {
+            document.querySelectorAll('.mobile-attr-btn').forEach((button) => {
+                button.addEventListener('click', function() {
+                    const charIdx = this.getAttribute('data-char');
+                    const attrIdx = this.getAttribute('data-attr');
+                    const checkbox = document.getElementById(`cb-${charIdx}-${attrIdx}`);
+                    if (!checkbox) return;
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    syncMobileFromTable();
+                });
+            });
+        }
+
+        function getClosestCardIndex(track) {
+            const cards = Array.from(track.querySelectorAll('.mobile-letter-card'));
+            if (!cards.length) return 0;
+
+            const trackRect = track.getBoundingClientRect();
+            const trackCenter = trackRect.left + (trackRect.width / 2);
+            let closestIndex = 0;
+            let minDistance = Number.POSITIVE_INFINITY;
+
+            cards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const center = rect.left + (rect.width / 2);
+                const distance = Math.abs(center - trackCenter);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestIndex = index;
+                }
+            });
+
+            return closestIndex;
+        }
+
+        function scrollMobileCarousel(track, step) {
+            const cards = Array.from(track.querySelectorAll('.mobile-letter-card'));
+            if (!cards.length) return;
+
+            const currentIndex = getClosestCardIndex(track);
+            const targetIndex = Math.max(0, Math.min(cards.length - 1, currentIndex + step));
+            cards[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        }
+
+        function updateMobileCarouselButtons(track, prevBtn, nextBtn) {
+            const cards = Array.from(track.querySelectorAll('.mobile-letter-card'));
+            if (!cards.length) return;
+
+            const currentIndex = getClosestCardIndex(track);
+            prevBtn.disabled = currentIndex <= 0;
+            nextBtn.disabled = currentIndex >= cards.length - 1;
+        }
+
+        function bindMobileCarouselControls() {
+            document.querySelectorAll('.mobile-group').forEach((section) => {
+                const track = section.querySelector('.mobile-group-cards');
+                const prevBtn = section.querySelector('.mobile-nav-btn.prev');
+                const nextBtn = section.querySelector('.mobile-nav-btn.next');
+                if (!track || !prevBtn || !nextBtn) return;
+
+                prevBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    scrollMobileCarousel(track, -1);
+                });
+
+                nextBtn.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    scrollMobileCarousel(track, 1);
+                });
+
+                let scrollUpdateScheduled = false;
+                track.addEventListener('scroll', () => {
+                    if (scrollUpdateScheduled) return;
+                    scrollUpdateScheduled = true;
+                    requestAnimationFrame(() => {
+                        updateMobileCarouselButtons(track, prevBtn, nextBtn);
+                        scrollUpdateScheduled = false;
+                    });
+                }, { passive: true });
+
+                updateMobileCarouselButtons(track, prevBtn, nextBtn);
+            });
+        }
+
+        function syncMobileFromTable() {
+            CHARACTERS.forEach((_, charIdx) => {
+                const row = document.getElementById(`row-${charIdx}`);
+                const tableStatus = document.getElementById(`status-${charIdx}`);
+                const card = document.getElementById(`mobile-card-${charIdx}`);
+                const mobileStatus = document.getElementById(`mobile-status-${charIdx}`);
+
+                if (!card) return;
+
+                card.classList.remove('mobile-correct', 'mobile-incorrect');
+                if (row && row.classList.contains('correct-row')) {
+                    card.classList.add('mobile-correct');
+                } else if (row && row.classList.contains('incorrect-row')) {
+                    card.classList.add('mobile-incorrect');
+                }
+
+                if (mobileStatus && tableStatus) {
+                    mobileStatus.className = 'mobile-status-indicator pending';
+                    mobileStatus.textContent = '○';
+                    if (tableStatus.classList.contains('correct')) {
+                        mobileStatus.className = 'mobile-status-indicator correct';
+                        mobileStatus.textContent = '✓';
+                    } else if (tableStatus.classList.contains('incorrect')) {
+                        mobileStatus.className = 'mobile-status-indicator incorrect';
+                        mobileStatus.textContent = '✗';
+                    }
+                }
+
+                ATTRIBUTES.forEach((_, attrIdx) => {
+                    const checkbox = document.getElementById(`cb-${charIdx}-${attrIdx}`);
+                    const mobileBtn = document.getElementById(`mcb-${charIdx}-${attrIdx}`);
+                    if (!checkbox || !mobileBtn) return;
+
+                    const cell = checkbox.closest('td');
+                    mobileBtn.classList.toggle('is-active', checkbox.checked);
+                    mobileBtn.setAttribute('aria-pressed', checkbox.checked ? 'true' : 'false');
+                    mobileBtn.classList.remove('is-wrong', 'is-hint');
+
+                    if (cell && cell.classList.contains('wrong-cell')) {
+                        mobileBtn.classList.add('is-wrong');
+                    }
+                    if (cell && cell.classList.contains('hint-cell')) {
+                        mobileBtn.classList.add('is-hint');
+                    }
+                });
+            });
+        }
+
+        function initializeQuiz() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            CHARACTERS.forEach((char, index) => {
+                const row = document.createElement('tr');
+                row.id = `row-${index}`;
+                const imagePath = getMakhrajImagePath(index);
+                const popoverLabel = `صورة مخرج الحرف ${char.char}`;
+                
+                let html = `
+                    <td class="char-cell" rowspan="1">
+                        <button type="button" class="letter-trigger" aria-label="${popoverLabel}">${char.char}</button>
+                        <div class="makhraj-popover" role="tooltip">
+                            <img src="${imagePath}" alt="${popoverLabel}" loading="lazy" decoding="async">
+                        </div>
+                    </td>
+                    <td class="makhraj-cell" id="general-${index}" rowspan="1">${char.general}</td>
+                    <td class="submakhraj-cell" id="special-${index}" rowspan="1">${getEffectiveSpecialForIndex(index)}</td>
+                    <td class="status-cell"><span class="status-indicator pending" id="status-${index}">○</span></td>
+                `;
+
+                ATTRIBUTES.forEach((_, attrIdx) => {
+                    html += `
+                        <td class="${getAttributeColorClass(attrIdx)}">
+                            <input type="checkbox" id="cb-${index}-${attrIdx}" class="attr-checkbox" data-char="${index}" data-attr="${attrIdx}">
+                        </td>
+                    `;
+                });
+
+                row.innerHTML = html;
+                tableBody.appendChild(row);
+            });
+
+            mergeMakhrajCells();
+            initializeMobileQuiz();
+            setupLetterPopovers();
+            syncMobileFromTable();
+        }
+
+        function mergeMakhrajCells() {
+            // Merge general makhraj (المخرج العام)
+            let generalGroups = {};
+            CHARACTERS.forEach((char, index) => {
+                if (!generalGroups[char.general]) {
+                    generalGroups[char.general] = [];
+                }
+                generalGroups[char.general].push(index);
+            });
+
+            // Store which cells to remove
+            let cellsToRemove = new Set();
+
+            // Apply rowspan for general makhraj
+            Object.entries(generalGroups).forEach(([makhraj, indices]) => {
+                if (indices.length > 1) {
+                    const firstCell = document.getElementById(`general-${indices[0]}`);
+                    firstCell.rowSpan = indices.length;
+                    firstCell.style.textAlign = 'center';
+                    firstCell.style.verticalAlign = 'middle';
+                    
+                    // Mark other cells for removal
+                    for (let i = 1; i < indices.length; i++) {
+                        cellsToRemove.add(`general-${indices[i]}`);
+                    }
+                }
+            });
+
+            // Merge special makhraj (المخرج الخاص)
+            let specialGroups = {};
+            CHARACTERS.forEach((char, index) => {
+                const effectiveSpecial = getEffectiveSpecialForIndex(index);
+                const key = char.general + '|' + effectiveSpecial;
+                
+                if (!specialGroups[key]) {
+                    specialGroups[key] = [];
+                }
+                specialGroups[key].push(index);
+            });
+
+            // Apply rowspan for special makhraj
+            Object.entries(specialGroups).forEach(([key, indices]) => {
+                if (indices.length > 1) {
+                    const firstCell = document.getElementById(`special-${indices[0]}`);
+                    if (firstCell) {
+                        firstCell.rowSpan = indices.length;
+                        firstCell.style.textAlign = 'center';
+                        firstCell.style.verticalAlign = 'middle';
+                        
+                        // Mark other cells for removal
+                        for (let i = 1; i < indices.length; i++) {
+                            cellsToRemove.add(`special-${indices[i]}`);
+                        }
+                    }
+                }
+            });
+
+            // Remove marked cells from DOM
+            cellsToRemove.forEach(cellId => {
+                const cell = document.getElementById(cellId);
+                if (cell) {
+                    cell.remove();
+                }
+            });
+
+            // Add event listeners for mutual exclusivity
+            document.querySelectorAll('.attr-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        const attrIdx = parseInt(this.getAttribute('data-attr'));
+                        const charIdx = parseInt(this.getAttribute('data-char'));
+                        
+                        MUTUAL_EXCLUSIONS.forEach((group) => {
+                            if (group.indices.includes(attrIdx)) {
+                                group.indices.forEach(idx => {
+                                    if (idx !== attrIdx) {
+                                        const opposingCheckbox = document.getElementById(`cb-${charIdx}-${idx}`);
+                                        if (opposingCheckbox && opposingCheckbox.checked) {
+                                            opposingCheckbox.checked = false;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    syncMobileFromTable();
+                });
+            });
+        }
+
+        function submitQuiz() {
+            const results = document.getElementById('results');
+            let correct = 0;
+            let total = 0;
+
+            CHARACTERS.forEach((_, charIdx) => {
+                const row = document.getElementById(`row-${charIdx}`);
+                const statusEl = document.getElementById(`status-${charIdx}`);
+                row.classList.remove('correct-row', 'incorrect-row');
+
+                const correctAttrs = CHARACTERS[charIdx].attrs;
+                let allCorrect = true;
+
+                ATTRIBUTES.forEach((_, attrIdx) => {
+                    const checkbox = document.getElementById(`cb-${charIdx}-${attrIdx}`);
+                    const cell = checkbox ? checkbox.closest('td') : null;
+                    const val = checkbox && checkbox.checked ? 1 : 0;
+                    const expected = correctAttrs[attrIdx];
+
+                    if (cell) {
+                        cell.classList.remove('wrong-cell', 'hint-cell');
+                    }
+                    if (expected) {
+                        total++;
+                        if (val) {
+                            correct++;
+                        } else {
+                            allCorrect = false;
+                            if (cell && checkbox && !checkbox.checked) {
+                                cell.classList.add('hint-cell');
+                            }
+                        }
+                    } else if (val) {
+                        total++;
+                        allCorrect = false;
+                        if (cell && checkbox && checkbox.checked) {
+                            cell.classList.add('wrong-cell');
+                        }
+                    }
+                });
+
+                if (allCorrect) {
+                    statusEl.className = 'status-indicator correct';
+                    statusEl.textContent = '✓';
+                    row.classList.add('correct-row');
+                } else {
+                    statusEl.className = 'status-indicator incorrect';
+                    statusEl.textContent = '✗';
+                    row.classList.add('incorrect-row');
+                }
+            });
+
+            const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+            const scoreCircle = document.getElementById('scoreCircle');
+            
+            if (percentage >= 90) {
+                scoreCircle.className = 'score-circle excellent';
+            } else if (percentage >= 75) {
+                scoreCircle.className = 'score-circle good';
+            } else if (percentage >= 60) {
+                scoreCircle.className = 'score-circle fair';
+            } else {
+                scoreCircle.className = 'score-circle poor';
+            }
+            
+            scoreCircle.textContent = percentage + '%';
+
+            const resultText = percentage >= 90 ? '🎉 ممتاز! أنت متقن لمخارج وصفات الحروف!' : 
+                               percentage >= 75 ? '👏 جيد جداً! استمر في المراجعة' : 
+                               percentage >= 60 ? '📚 جيد، لكن تحتاج لمراجعة أكثر' : 
+                               '💪 حاول مرة أخرى وراجع المخارج والصفات';
+
+            document.getElementById('resultDetails').innerHTML = `
+                <div class="result-item">
+                    <strong style="font-size: 16px;">${resultText}</strong>
+                </div>
+                <div class="result-item">
+                    <strong>النتيجة النهائية:</strong> ${correct} من ${total} إجابة صحيحة
+                </div>
+                <div class="result-item">
+                    <strong>عدد الحروف الصحيحة بالكامل:</strong> ${CHARACTERS.filter((_, idx) => {
+                        const row = document.getElementById(`row-${idx}`);
+                        return row.classList.contains('correct-row');
+                    }).length} من ${CHARACTERS.length}
+                </div>
+            `;
+
+            results.classList.add('show');
+            syncMobileFromTable();
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showHints() {
+            CHARACTERS.forEach((char, charIdx) => {
+                char.attrs.forEach((shouldBeChecked, attrIdx) => {
+                    const checkbox = document.getElementById(`cb-${charIdx}-${attrIdx}`);
+                    const cell = checkbox ? checkbox.closest('td') : null;
+                    
+                    if (cell && shouldBeChecked && checkbox && !checkbox.checked) {
+                        cell.classList.add('hint-cell');
+                    }
+                });
+            });
+            syncMobileFromTable();
+            alert('✨ تم تمييز الصفات المفقودة باللون البرتقالي!');
+        }
+
+        function resetQuiz() {
+            closeAllLetterPopovers();
+
+            document.querySelectorAll('.attr-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                row.classList.remove('correct-row', 'incorrect-row');
+                row.querySelectorAll('td').forEach(cell => {
+                    cell.classList.remove('wrong-cell', 'hint-cell');
+                });
+                const statusEl = row.querySelector('.status-indicator');
+                if (statusEl) {
+                    statusEl.className = 'status-indicator pending';
+                    statusEl.textContent = '○';
+                }
+            });
+
+            document.getElementById('results').classList.remove('show');
+            syncMobileFromTable();
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', initializeQuiz);
+    </script>
+</body>
+</html>
