@@ -363,6 +363,12 @@
             accent-color: #667eea;
         }
 
+        .not-applicable-cell {
+            color: #999;
+            font-size: 12px;
+            background: #f8f8f8 !important;
+        }
+
         tr:hover {
             background: #f5f9ff;
         }
@@ -475,10 +481,56 @@
             width: 56px;
             min-width: 56px;
             min-height: 56px;
+            padding: 0;
             border: 1px solid #d7def5;
             border-radius: 10px;
             background: #ffffff;
             font-size: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+        }
+
+        .mobile-eye-trigger {
+            width: auto;
+            height: 30px;
+            min-height: 30px;
+            padding: 0 10px;
+            border: 1px solid #d7def5;
+            border-radius: 999px;
+            background: #f7f9ff;
+            color: #445fc6;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+
+        .mobile-popover-close {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 32px;
+            height: 32px;
+            min-height: 32px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.65);
+            color: #ffffff;
+            font-size: 24px;
+            line-height: 1;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
         }
 
         .mobile-char-cell {
@@ -825,11 +877,22 @@
                 max-height: 75vh;
                 object-fit: contain;
             }
+            .mobile-popover-close {
+                display: inline-flex;
+            }
 
             .char-cell:hover .makhraj-popover,
-            .char-cell:focus-within .makhraj-popover,
+            .char-cell:focus-within .makhraj-popover {
+                opacity: 0;
+                visibility: hidden;
+                transform: translate(-50%, -46%);
+                pointer-events: none;
+            }
             .char-cell.is-open .makhraj-popover {
+                opacity: 1;
+                visibility: visible;
                 transform: translate(-50%, -50%);
+                pointer-events: auto;
             }
 
             body.popover-open {
@@ -975,7 +1038,7 @@
 
         <div class="instructions">
             <strong>📋 الإرشادات:</strong>
-            <br>الجدول يعرض جميع الحروف العربية (31 حرف) مع مخارجها العامة والخاصة. اختر الصفات الصحيحة لكل حرف بوضع علامة صح (✓) في المربعات المناسبة. بعد الانتهاء، اضغط "تحقق من الإجابات" لرؤية نتيجتك.
+            <br>الجدول يعرض الحروف العربية الثمانية والعشرين، إضافةً إلى حروف المد الثلاثة (ا، و، ي). اختر الصفات الصحيحة لكل حرف بوضع علامة صح (✓) في المربعات المناسبة. بعد الانتهاء، اضغط "تحقق من الإجابات" لرؤية نتيجتك.
         </div>
 
         <div class="legend">
@@ -1099,9 +1162,9 @@
         const NEUTRAL_ATTRIBUTES = [11, 12, 13, 14, 15, 16, 17]; // الصفير, القلقلة, اللين, الانحراف, التكرير, التفشي, الاستطالة
 
         const CHARACTERS = [
-            { char: "ا", general: "الجوف", special: "خلاء الحلق والفم", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
-            { char: "و", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
-            { char: "ي", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
+            { char: "ا مدية", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
+            { char: "و مدية", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
+            { char: "ي مدية", general: "الجوف", special: "", attrs: [1,0,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
             { char: "ء", general: "الحلق", special: "أقصى الحلق", attrs: [1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
             { char: "هـ", general: "الحلق", special: "", attrs: [0,1,0,1,0,0,1,0,1,0,1,0,0,0,0,0,0,0] },
             { char: "ع", general: "الحلق", special: "وسط الحلق", attrs: [1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0] },
@@ -1186,6 +1249,13 @@
             return colorClass;
         }
 
+        function formatArabicLetterCount(count) {
+            if (count === 1) return 'حرف واحد';
+            if (count === 2) return 'حرفان';
+            if (count >= 3 && count <= 10) return `${count} حروف`;
+            return `${count} حرفًا`;
+        }
+
         function setPopoverOpenState(isOpen) {
             document.body.classList.toggle('popover-open', isOpen);
         }
@@ -1200,10 +1270,11 @@
         let popoverDocumentEventsBound = false;
 
         function setupLetterPopovers() {
-            document.querySelectorAll('.letter-trigger').forEach((trigger) => {
+            document.querySelectorAll('.makhraj-trigger').forEach((trigger) => {
                 trigger.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const cell = this.closest('.char-cell');
+                    const cell = this.closest('.char-cell') || this.closest('.mobile-card-head')?.querySelector('.char-cell');
+                    if (!cell) return;
                     const shouldOpen = !cell.classList.contains('is-open');
                     closeAllLetterPopovers();
                     if (shouldOpen) {
@@ -1216,6 +1287,14 @@
             document.querySelectorAll('.makhraj-popover').forEach((popover) => {
                 popover.addEventListener('click', (event) => {
                     event.stopPropagation();
+                });
+            });
+
+            document.querySelectorAll('.mobile-popover-close').forEach((closeButton) => {
+                closeButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    closeButton.blur();
+                    closeAllLetterPopovers();
                 });
             });
 
@@ -1243,6 +1322,7 @@
             const popoverLabel = `صورة مخرج الحرف ${char.char}`;
             const effectiveSpecial = getEffectiveSpecialForIndex(index);
             const specialMarkup = `<div class="mobile-special">${effectiveSpecial}</div>`;
+            const attrsMarkup = (() => {
             const segmentedMarkup = MUTUAL_EXCLUSIONS.map((group) => {
                 const groupLabel = group.indices.map((attrIdx) => ATTRIBUTES[attrIdx]).join(' / ');
                 const optionsMarkup = group.indices.map((attrIdx) => `
@@ -1255,7 +1335,7 @@
                         aria-pressed="false"
                     >${ATTRIBUTES[attrIdx]}</button>
                 `).join('');
-                return `
+            return `
                     <div class="mobile-segment-group">
                         <div class="mobile-segment-title">${groupLabel}</div>
                         <div class="mobile-segment-track" role="group" aria-label="${groupLabel}">
@@ -1276,12 +1356,13 @@
                 >${ATTRIBUTES[attrIdx]}</button>
             `).join('');
 
-            const attrsMarkup = `
+            return `
                 <div class="mobile-attrs-layout">
                     <div class="mobile-segment-groups">${segmentedMarkup}</div>
                     <div class="mobile-chip-list">${chipsMarkup}</div>
                 </div>
             `;
+            })();
 
             const card = document.createElement('article');
             card.className = 'mobile-letter-card';
@@ -1290,14 +1371,19 @@
                 <div class="mobile-card-head">
                     <div class="mobile-card-letter-wrap">
                         <div class="char-cell mobile-char-cell">
-                            <button type="button" class="letter-trigger mobile-letter-trigger" aria-label="${popoverLabel}">${char.char}</button>
+                            <button type="button" class="mobile-letter-trigger" aria-label="${char.char}">${char.char}</button>
                             <div class="makhraj-popover" role="tooltip">
+                                <button type="button" class="mobile-popover-close" aria-label="إغلاق الصورة">×</button>
                                 <img src="${imagePath}" alt="${popoverLabel}" loading="lazy" decoding="async">
                             </div>
                         </div>
                         <div class="mobile-makhraj-meta">
                             <div class="mobile-general">${char.general}</div>
                             ${specialMarkup}
+                            <button type="button" class="makhraj-trigger mobile-eye-trigger" aria-label="${popoverLabel}" title="${popoverLabel}">
+                                <span aria-hidden="true">◉</span>
+                                <span>عرض المخرج</span>
+                            </button>
                         </div>
                     </div>
                     <span class="mobile-status-indicator pending" id="mobile-status-${index}">○</span>
@@ -1329,7 +1415,7 @@
                 section.innerHTML = `
                     <summary>
                         <span>${general}</span>
-                        <span class="mobile-group-count">${items.length} حرف</span>
+                        <span class="mobile-group-count">${formatArabicLetterCount(items.length)}</span>
                     </summary>
                     <div class="mobile-group-cards"></div>
                     <div class="mobile-carousel-nav">
@@ -1496,7 +1582,7 @@
                 
                 let html = `
                     <td class="char-cell" rowspan="1">
-                        <button type="button" class="letter-trigger" aria-label="${popoverLabel}">${char.char}</button>
+                        <button type="button" class="letter-trigger makhraj-trigger" aria-label="${popoverLabel}">${char.char}</button>
                         <div class="makhraj-popover" role="tooltip">
                             <img src="${imagePath}" alt="${popoverLabel}" loading="lazy" decoding="async">
                         </div>
@@ -1768,10 +1854,10 @@
                     <strong>النتيجة النهائية:</strong> ${correct} من ${total} إجابة صحيحة
                 </div>
                 <div class="result-item">
-                    <strong>عدد الحروف الصحيحة بالكامل:</strong> ${CHARACTERS.filter((_, idx) => {
+                    <strong>عدد الحروف الصحيحة بالكامل:</strong> ${formatArabicLetterCount(CHARACTERS.filter((_, idx) => {
                         const row = document.getElementById(`row-${idx}`);
                         return row.classList.contains('correct-row');
-                    }).length} من ${CHARACTERS.length}
+                    }).length)} من ${formatArabicLetterCount(CHARACTERS.length)}
                 </div>
             `;
 
