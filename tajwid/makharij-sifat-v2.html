@@ -11,17 +11,6 @@
             box-sizing: border-box;
         }
 
-        @media (min-width: 769px) {
-            #quizTable thead tr:first-child th {
-                top: 0;
-                z-index: 20;
-            }
-
-            #quizTable thead tr:nth-child(2) th {
-                top: 40px;
-                z-index: 21;
-            }
-        }
 
         body {
             font-family: 'Arial', 'Segoe UI', sans-serif;
@@ -76,9 +65,31 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        .fixed-table-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            display: none;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .fixed-table-header.visible {
+            display: block;
+        }
+
+        .fixed-table-header table {
+            margin: 0;
+        }
+
         table {
             width: 100%;
-            border-collapse: collapse;
+            min-width: 1250px;
+            border-collapse: separate;
+            border-spacing: 0;
             background: white;
         }
 
@@ -204,6 +215,7 @@
             top: 0;
             z-index: 10;
             white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
         }
 
         td {
@@ -1510,6 +1522,80 @@
             initializeMobileQuiz();
             setupLetterPopovers();
             syncMobileFromTable();
+            setupFixedTableHeader();
+        }
+
+        let fixedHeaderResizeObserver = null;
+
+        function setupFixedTableHeader() {
+            const wrapper = document.querySelector('.table-wrapper');
+            const table = document.getElementById('quizTable');
+            const thead = table ? table.querySelector('thead') : null;
+            if (!wrapper || !table || !thead) return;
+
+            document.querySelector('.fixed-table-header')?.remove();
+
+            const fixedHeader = document.createElement('div');
+            fixedHeader.className = 'fixed-table-header';
+            fixedHeader.setAttribute('aria-hidden', 'true');
+
+            const clonedTable = document.createElement('table');
+            clonedTable.appendChild(thead.cloneNode(true));
+            fixedHeader.appendChild(clonedTable);
+            document.body.appendChild(fixedHeader);
+
+            const syncHeaderSize = () => {
+                const wrapperRect = wrapper.getBoundingClientRect();
+                fixedHeader.style.left = `${wrapperRect.left}px`;
+                fixedHeader.style.width = `${wrapperRect.width}px`;
+                clonedTable.style.width = `${table.offsetWidth}px`;
+                clonedTable.style.minWidth = `${table.offsetWidth}px`;
+                clonedTable.style.transform = `translateX(${-wrapper.scrollLeft}px)`;
+
+                const sourceRows = thead.querySelectorAll('tr');
+                const clonedRows = clonedTable.querySelectorAll('tr');
+                sourceRows.forEach((sourceRow, rowIndex) => {
+                    const sourceCells = sourceRow.children;
+                    const clonedCells = clonedRows[rowIndex] ? clonedRows[rowIndex].children : [];
+                    Array.from(sourceCells).forEach((sourceCell, cellIndex) => {
+                        if (!clonedCells[cellIndex]) return;
+                        clonedCells[cellIndex].style.width = `${sourceCell.getBoundingClientRect().width}px`;
+                    });
+                });
+            };
+
+            const updateHeaderVisibility = () => {
+                if (window.matchMedia('(max-width: 768px)').matches) {
+                    fixedHeader.classList.remove('visible');
+                    return;
+                }
+
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const theadRect = thead.getBoundingClientRect();
+                const shouldShow = theadRect.bottom < 0 && wrapperRect.bottom > 0;
+                fixedHeader.classList.toggle('visible', shouldShow);
+                if (shouldShow) {
+                    syncHeaderSize();
+                }
+            };
+
+            const syncAndUpdate = () => {
+                syncHeaderSize();
+                updateHeaderVisibility();
+            };
+
+            wrapper.addEventListener('scroll', syncAndUpdate, { passive: true });
+            window.addEventListener('scroll', updateHeaderVisibility, { passive: true });
+            window.addEventListener('resize', syncAndUpdate);
+
+            if (fixedHeaderResizeObserver) {
+                fixedHeaderResizeObserver.disconnect();
+            }
+            fixedHeaderResizeObserver = new ResizeObserver(syncAndUpdate);
+            fixedHeaderResizeObserver.observe(wrapper);
+            fixedHeaderResizeObserver.observe(table);
+
+            syncAndUpdate();
         }
 
         function mergeMakhrajCells() {
