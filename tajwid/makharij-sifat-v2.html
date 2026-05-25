@@ -1027,6 +1027,146 @@
             border-radius: 3px;
             border: 1px solid #999;
         }
+
+        .attr-header-with-image {
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .attr-header-with-image:hover {
+            background-color: #4a5b8f !important;
+        }
+
+        .attr-header-with-image::after {
+            content: '🖼';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 10px;
+            opacity: 0.65;
+        }
+
+        /* Sifah Educational Slide Modal */
+        .sifah-modal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.22s ease, visibility 0.22s ease;
+        }
+        
+        .sifah-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sifah-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        
+        .sifah-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 14px;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+            z-index: 1001;
+            transform: scale(0.9);
+            transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-align: center;
+        }
+        
+        .sifah-modal.open .sifah-modal-content {
+            transform: scale(1);
+        }
+        
+        .sifah-modal-close {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            border: none;
+            background: rgba(0, 0, 0, 0.05);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .sifah-modal-close:hover {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+        
+        .sifah-modal-content h3 {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .sifah-modal-img-container {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fdfdfd;
+        }
+        
+        .sifah-modal-img-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Tap-friendly info icon inside Sifat buttons */
+        .info-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.12);
+            color: #4a63c5;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            user-select: none;
+            margin-inline-start: 6px;
+            vertical-align: middle;
+            transition: all 0.2s;
+        }
+        
+        .info-trigger:hover {
+            background: #4a63c5;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        /* Style Sifat buttons on mobile to support spacing with info trigger */
+        .mobile-attr-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: space-between !important;
+            padding-inline: 8px 6px !important;
+        }
     </style>
 </head>
 <body>
@@ -1091,24 +1231,24 @@
                         <th style="width: 100px;">المخرج العام</th>
                         <th style="width: 120px;">المخرج الخاص</th>
                         <th style="width: 40px;">✓</th>
-                        <th style="width: 55px;">الجهر</th>
-                        <th style="width: 55px;">الهمس</th>
-                        <th style="width: 55px;">الشدة</th>
-                        <th style="width: 55px;">الرخاوة</th>
-                        <th style="width: 55px;">البينية</th>
-                        <th style="width: 55px;">الاستعلاء</th>
-                        <th style="width: 55px;">الاستفال</th>
-                        <th style="width: 55px;">الإطباق</th>
-                        <th style="width: 55px;">الانفتاح</th>
-                        <th style="width: 55px;">الإذلاق</th>
-                        <th style="width: 55px;">الإصمات</th>
-                        <th style="width: 55px;">الصفير</th>
-                        <th style="width: 55px;">القلقلة</th>
-                        <th style="width: 55px;">اللين</th>
-                        <th style="width: 55px;">الانحراف</th>
-                        <th style="width: 55px;">التكرير</th>
-                        <th style="width: 55px;">التفشي</th>
-                        <th style="width: 55px;">الاستطالة</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="0">الجهر</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="1">الهمس</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="2">الشدة</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="3">الرخاوة</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="4">البينية</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="5">الاستعلاء</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="6">الاستفال</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="7">الإطباق</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="8">الانفتاح</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="9">الإذلاق</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="10">الإصمات</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="11">الصفير</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="12">القلقلة</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="13">اللين</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="14">الانحراف</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="15">التكرير</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="16">التفشي</th>
+                        <th style="width: 55px;" class="attr-header-with-image" data-attr="17">الاستطالة</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -1147,6 +1287,34 @@
             "الإصمات", "الصفير", "القلقلة",
             "اللين", "الانحراف", "التكرير", "التفشي", "الاستطالة"
         ];
+
+        // Image URLs for each attribute from التجويد المصور (Illustrated Tajweed)
+        // Format: imageId corresponds to local slide number named images/sifat_{id}.jpg
+        const ATTRIBUTE_IMAGES = {
+            0: { imageId: 132, name: "الجهر" },                  // الجهر - voicing (definition on slide 132)
+            1: { imageId: 131, name: "الهمس" },                  // الهمس - voicelessness (definition on slide 131)
+            2: { imageId: 135, name: "الشدة" },                  // الشدة - intensity (definition on slide 135)
+            3: { imageId: 139, name: "الرخاوة" },                // الرخاوة - fricative (definition on slide 139)
+            4: { imageId: 141, name: "البينية" },                // البينية - intermediate (Lam example on slide 141)
+            5: { imageId: 153, name: "الاستعلاء" },              // الاستعلاء - elevation (definition on slide 153)
+            6: { imageId: 154, name: "الاستفال" },               // الاستفال - lowering (anatomical comparison on slide 154)
+            7: { imageId: 178, name: "الإطباق" },                // الإطباق - closure (definition on slide 178)
+            8: { imageId: 179, name: "الانفتاح" },               // الانفتاح - opening (definition on slide 179)
+            9: { imageId: 128, name: "الإذلاق" },                // الإذلاق - fluency (summary table on slide 128)
+            10: { imageId: 128, name: "الإصمات" },               // الإصمات - firmness (summary table on slide 128)
+            11: { imageId: 183, name: "الصفير" },                // الصفير - sibilance (definition on slide 183)
+            12: { imageId: 184, name: "القلقلة" },               // القلقلة - tremor (definition on slide 184)
+            13: { imageId: 193, name: "اللين" },                 // اللين - softness (definition on slide 193)
+            14: { imageId: 194, name: "الانحراف" },              // الانحراف - deflection (definition on slide 194)
+            15: { imageId: 200, name: "التكرير" },               // التكرير - vibration (definition on slide 200)
+            16: { imageId: 201, name: "التفشي" },                // التفشي - spreading (definition on slide 201)
+            17: { imageId: 202, name: "الاستطالة" }              // الاستطالة - elongation (definition on slide 202)
+        };
+
+        function getAttributeImageUrl(attrIndex) {
+            const img = ATTRIBUTE_IMAGES[attrIndex];
+            return img ? `images/sifat_${img.imageId}.jpg` : null;
+        }
 
         // Define mutually exclusive attribute pairs with color groups
         // Format: {indices: [index1, index2, ...], colorClass: 'group-N'}
@@ -1321,7 +1489,7 @@
             const imagePath = getMakhrajImagePath(index);
             const popoverLabel = `صورة مخرج الحرف ${char.char}`;
             const effectiveSpecial = getEffectiveSpecialForIndex(index);
-            const specialMarkup = `<div class="mobile-special">${effectiveSpecial}</div>`;
+            const specialMarkup = `<div class=\"mobile-special\">${effectiveSpecial}</div>`;
             const attrsMarkup = (() => {
             const segmentedMarkup = MUTUAL_EXCLUSIONS.map((group) => {
                 const groupLabel = group.indices.map((attrIdx) => ATTRIBUTES[attrIdx]).join(' / ');
@@ -1333,7 +1501,10 @@
                         data-char="${index}"
                         data-attr="${attrIdx}"
                         aria-pressed="false"
-                    >${ATTRIBUTES[attrIdx]}</button>
+                    >
+                        <span>${ATTRIBUTES[attrIdx]}</span>
+                        <span class="info-trigger" onclick="event.stopPropagation(); openSifahModal(${attrIdx})">ℹ</span>
+                    </button>
                 `).join('');
             return `
                     <div class="mobile-segment-group">
@@ -1353,7 +1524,10 @@
                     data-char="${index}"
                     data-attr="${attrIdx}"
                     aria-pressed="false"
-                >${ATTRIBUTES[attrIdx]}</button>
+                >
+                    <span>${ATTRIBUTES[attrIdx]}</span>
+                    <span class="info-trigger" onclick="event.stopPropagation(); openSifahModal(${attrIdx})">ℹ</span>
+                </button>
             `).join('');
 
             return `
@@ -1570,6 +1744,51 @@
             });
         }
 
+        function setupAttributeImagePopovers() {
+            document.querySelectorAll('.attr-header-with-image').forEach((header) => {
+                const attrIdx = parseInt(header.getAttribute('data-attr'));
+                
+                header.style.cursor = 'pointer';
+                header.setAttribute('title', 'اضغط لعرض شرح الصفة المصورة');
+                
+                header.addEventListener('click', () => {
+                    openSifahModal(attrIdx);
+                });
+            });
+        }
+
+        function openSifahModal(attrIdx) {
+            const sifahName = ATTRIBUTES[attrIdx];
+            const imgUrl = getAttributeImageUrl(attrIdx);
+            
+            const modal = document.getElementById('sifahModal');
+            const title = document.getElementById('sifahModalTitle');
+            const img = document.getElementById('sifahModalImg');
+            
+            if (modal && title && img && imgUrl) {
+                title.textContent = `شرح صفة: ${sifahName}`;
+                img.src = imgUrl;
+                img.alt = sifahName;
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeSifahModal() {
+            const modal = document.getElementById('sifahModal');
+            if (modal) {
+                modal.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Close on escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSifahModal();
+            }
+        });
+
         function initializeQuiz() {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
@@ -1607,6 +1826,7 @@
             mergeMakhrajCells();
             initializeMobileQuiz();
             setupLetterPopovers();
+            setupAttributeImagePopovers();
             syncMobileFromTable();
             setupFixedTableHeader();
         }
@@ -1907,5 +2127,17 @@
         // Initialize on page load
         window.addEventListener('load', initializeQuiz);
     </script>
+    
+    <!-- Sifah Educational Slide Modal -->
+    <div id="sifahModal" class="sifah-modal" role="dialog" aria-modal="true" aria-labelledby="sifahModalTitle">
+        <div class="sifah-modal-overlay" onclick="closeSifahModal()"></div>
+        <div class="sifah-modal-content">
+            <button type="button" class="sifah-modal-close" onclick="closeSifahModal()" aria-label="إغلاق">&times;</button>
+            <h3 id="sifahModalTitle">شرح الصفة</h3>
+            <div class="sifah-modal-img-container">
+                <img id="sifahModalImg" src="" alt="" loading="lazy">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
