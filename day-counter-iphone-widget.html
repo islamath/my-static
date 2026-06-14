@@ -375,7 +375,9 @@
           const link = document.createElement('a');
           link.download = safeName + '.png';
           link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
           link.click();
+          document.body.removeChild(link);
         });
     }
 
@@ -389,7 +391,11 @@
     if (snapshot) {
       // Delay to allow custom fonts and layout to fully paint before capturing
       const SNAPSHOT_DELAY_MS = 400;
-      window.addEventListener('load', () => { setTimeout(captureImage, SNAPSHOT_DELAY_MS); });
+      if (document.readyState === 'complete') {
+        setTimeout(captureImage, SNAPSHOT_DELAY_MS);
+      } else {
+        window.addEventListener('load', () => { setTimeout(captureImage, SNAPSHOT_DELAY_MS); });
+      }
     }
   </script>
 </body>
