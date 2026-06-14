@@ -44,6 +44,7 @@
       place-items: center;
       padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
     }
+    body.snapshot { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     .phone {
       width: min(100%, 420px);
     }
@@ -219,6 +220,8 @@
       color: var(--muted);
     }
     .future { color: var(--danger); }
+    body.snapshot .controls { display: none; }
+    body.snapshot .phone { width: min(100%, 520px); }
     @media (max-width: 390px) {
       .stats { grid-template-columns: 1fr; }
       .hero { grid-template-columns: 1fr; }
@@ -273,6 +276,7 @@
 
   <script>
     const q = new URLSearchParams(location.search);
+    const snapshot = ['1', 'true', 'yes'].includes((q.get('snapshot') || '').toLowerCase());
     const els = {
       name: document.getElementById('name'),
       date: document.getElementById('date'),
@@ -304,6 +308,7 @@
     }
 
     function setState() {
+      if (snapshot) return;
       const url = new URL(location.href);
       const name = els.name.value.trim();
       const date = els.date.value;
@@ -318,12 +323,12 @@
       els.eventLabel.textContent = name;
       if (!date) {
         els.count.textContent = '—';
-        els.sinceText.textContent = 'pick a date';
+        els.sinceText.textContent = snapshot ? 'pass ?date=YYYY-MM-DD' : 'pick a date';
         els.weeks.textContent = '0.0';
         els.months.textContent = '0.0';
         els.years.textContent = '0.00';
         els.ringText.textContent = '0d';
-        els.modePill.textContent = 'Idle';
+        els.modePill.textContent = snapshot ? 'Snapshot' : 'Idle';
         return;
       }
       const d = daysDiff(date);
@@ -335,13 +340,17 @@
       els.ringText.textContent = abs + 'd';
       if (d >= 0) {
         els.sinceText.textContent = `${abs} day${abs === 1 ? '' : 's'} since ${date}`;
-        els.modePill.textContent = 'Since';
-        els.note.textContent = 'In Safari, use Share then Add to Home Screen for the closest Apple-widget look.';
+        els.modePill.textContent = snapshot ? 'Snapshot' : 'Since';
+        els.note.textContent = snapshot
+          ? 'Snapshot mode enabled.'
+          : 'In Safari, use Share then Add to Home Screen for the closest Apple-widget look.';
         els.note.classList.remove('future');
       } else {
         els.sinceText.textContent = `${abs} day${abs === 1 ? '' : 's'} until ${date}`;
-        els.modePill.textContent = 'Until';
-        els.note.textContent = 'Future date detected: this version automatically becomes a countdown.';
+        els.modePill.textContent = snapshot ? 'Snapshot' : 'Until';
+        els.note.textContent = snapshot
+          ? 'Snapshot mode enabled.'
+          : 'Future date detected: this version automatically becomes a countdown.';
         els.note.classList.add('future');
       }
     }
@@ -349,8 +358,9 @@
     document.getElementById('apply').addEventListener('click', () => { setState(); render(); });
     document.getElementById('today').addEventListener('click', () => { els.date.value = localToday(); setState(); render(); });
 
+    if (snapshot) document.body.classList.add('snapshot');
     els.name.value = q.get('name') || 'Since Date';
-    els.date.value = q.get('date') || localToday();
+    els.date.value = q.get('date') || (snapshot ? '' : localToday());
     render();
   </script>
 </body>
