@@ -222,6 +222,11 @@
     .future { color: var(--danger); }
     body.snapshot .controls { display: none; }
     body.snapshot .phone { width: min(100%, 520px); }
+    #saveBtn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
     @media (max-width: 390px) {
       .stats { grid-template-columns: 1fr; }
       .hero { grid-template-columns: 1fr; }
@@ -270,10 +275,12 @@
         <button id="apply" class="primary" type="button">Apply</button>
         <button id="today" class="secondary" type="button">Today</button>
       </div>
+      <button id="saveBtn" class="secondary" type="button">Save as Image</button>
       <div id="note" class="note">In Safari, use Share then Add to Home Screen for the closest Apple-widget look.</div>
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const q = new URLSearchParams(location.search);
     const snapshot = ['1', 'true', 'yes'].includes((q.get('snapshot') || '').toLowerCase());
@@ -358,10 +365,31 @@
     document.getElementById('apply').addEventListener('click', () => { setState(); render(); });
     document.getElementById('today').addEventListener('click', () => { els.date.value = localToday(); setState(); render(); });
 
+    function captureImage() {
+      const widget = document.querySelector('.widget');
+      return html2canvas(widget, { backgroundColor: null, scale: 2, useCORS: true })
+        .then(canvas => {
+          const name = (els.name.value.trim() || 'day-counter').replace(/\s+/g, '-').toLowerCase();
+          const link = document.createElement('a');
+          link.download = name + '.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        });
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', captureImage);
+
     if (snapshot) document.body.classList.add('snapshot');
     els.name.value = q.get('name') || 'Since Date';
     els.date.value = q.get('date') || (snapshot ? '' : localToday());
     render();
+
+    if (snapshot) {
+      window.addEventListener('load', () => {
+        // Small delay to ensure fonts and layout are fully painted
+        setTimeout(captureImage, 400);
+      });
+    }
   </script>
 </body>
 </html>
