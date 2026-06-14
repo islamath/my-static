@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Apple Style Day Counter</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: rgba(28, 31, 38, 0.86);
+      --card-2: rgba(255,255,255,0.06);
+      --stroke: rgba(255,255,255,0.10);
+      --text: #f5f7fb;
+      --muted: rgba(245,247,251,0.68);
+      --accent: #8ec5ff;
+      --accent-2: #5fa5ff;
+      --good: #8ee3b0;
+      --danger: #ff9fb2;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --r-xl: 28px;
+      --r-lg: 22px;
+      --r-md: 16px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --font: ui-rounded, "SF Pro Rounded", "SF Pro Display", Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(142,197,255,0.28), transparent 30%),
+        radial-gradient(circle at 85% 12%, rgba(112,133,255,0.18), transparent 26%),
+        linear-gradient(180deg, #151821 0%, #0d0f14 100%);
+      display: grid;
+      place-items: center;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    }
+    .phone {
+      width: min(100%, 420px);
+    }
+    .widget {
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 34px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      overflow: hidden;
+    }
+    .top {
+      padding: var(--space-5) var(--space-5) var(--space-4);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--space-3);
+    }
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+    .event {
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 700;
+      margin: 0;
+      max-width: 10ch;
+      word-break: break-word;
+    }
+    .mini-pill {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(142,197,255,0.14);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .hero {
+      padding: 18px 20px 8px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: var(--space-4);
+    }
+    .count {
+      font-size: clamp(64px, 18vw, 92px);
+      line-height: 0.9;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      font-variant-numeric: tabular-nums;
+      margin: 0;
+    }
+    .since {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: var(--space-2);
+    }
+    .ring {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(var(--accent) 0deg, var(--accent-2) 220deg, rgba(255,255,255,0.1) 220deg 360deg);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 24px rgba(255,255,255,0.08);
+    }
+    .ring::before {
+      content: "";
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #141821;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ring span {
+      position: absolute;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+    .stat {
+      background: var(--card-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--r-md);
+      padding: 14px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .controls {
+      margin-top: 14px;
+      background: rgba(18,20,26,0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 16px;
+      backdrop-filter: blur(20px);
+    }
+    .controls h2 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+    .field { margin-bottom: 12px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    input {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font: inherit;
+      padding: 0 14px;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary {
+      background: linear-gradient(180deg, #7ebcff, #4f98ff);
+      color: #08111d;
+    }
+    .secondary {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .future { color: var(--danger); }
+    @media (max-width: 390px) {
+      .stats { grid-template-columns: 1fr; }
+      .hero { grid-template-columns: 1fr; }
+      .ring { width: 70px; height: 70px; }
+      .ring::before { width: 52px; height: 52px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <section class="widget" aria-live="polite">
+      <div class="top">
+        <div class="eyebrow">Day counter</div>
+        <div class="title-row">
+          <h1 id="eventLabel" class="event">Since Date</h1>
+          <div id="modePill" class="mini-pill">Live</div>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div>
+          <p id="count" class="count">0</p>
+          <div id="sinceText" class="since">days since today</div>
+        </div>
+        <div class="ring" aria-hidden="true"><span id="ringText">0d</span></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><strong id="weeks">0.0</strong><span>Weeks</span></div>
+        <div class="stat"><strong id="months">0.0</strong><span>Months</span></div>
+        <div class="stat"><strong id="years">0.00</strong><span>Years</span></div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <h2>Edit counter</h2>
+      <div class="field">
+        <label for="name">Event</label>
+        <input id="name" type="text" maxlength="30" placeholder="Example: New job" />
+      </div>
+      <div class="field">
+        <label for="date">Date</label>
+        <input id="date" type="date" />
+      </div>
+      <div class="actions">
+        <button id="apply" class="primary" type="button">Apply</button>
+        <button id="today" class="secondary" type="button">Today</button>
+      </div>
+      <div id="note" class="note">In Safari, use Share then Add to Home Screen for the closest Apple-widget look.</div>
+    </section>
+  </main>
+
+  <script>
+    const q = new URLSearchParams(location.search);
+    const els = {
+      name: document.getElementById('name'),
+      date: document.getElementById('date'),
+      count: document.getElementById('count'),
+      sinceText: document.getElementById('sinceText'),
+      eventLabel: document.getElementById('eventLabel'),
+      modePill: document.getElementById('modePill'),
+      weeks: document.getElementById('weeks'),
+      months: document.getElementById('months'),
+      years: document.getElementById('years'),
+      ringText: document.getElementById('ringText'),
+      note: document.getElementById('note')
+    };
+
+    function localToday() {
+      const d = new Date();
+      const offset = d.getTimezoneOffset() * 60000;
+      return new Date(d - offset).toISOString().slice(0, 10);
+    }
+
+    function startOfToday() {
+      const d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function daysDiff(dateStr) {
+      const from = new Date(dateStr + 'T00:00:00');
+      return Math.floor((startOfToday() - from) / 86400000);
+    }
+
+    function setState() {
+      const url = new URL(location.href);
+      const name = els.name.value.trim();
+      const date = els.date.value;
+      if (name) url.searchParams.set('name', name); else url.searchParams.delete('name');
+      if (date) url.searchParams.set('date', date); else url.searchParams.delete('date');
+      history.replaceState({}, '', url);
+    }
+
+    function render() {
+      const name = els.name.value.trim() || 'Since Date';
+      const date = els.date.value;
+      els.eventLabel.textContent = name;
+      if (!date) {
+        els.count.textContent = '—';
+        els.sinceText.textContent = 'pick a date';
+        els.weeks.textContent = '0.0';
+        els.months.textContent = '0.0';
+        els.years.textContent = '0.00';
+        els.ringText.textContent = '0d';
+        els.modePill.textContent = 'Idle';
+        return;
+      }
+      const d = daysDiff(date);
+      const abs = Math.abs(d);
+      els.count.textContent = abs.toLocaleString();
+      els.weeks.textContent = (abs / 7).toFixed(1);
+      els.months.textContent = (abs / 30.44).toFixed(1);
+      els.years.textContent = (abs / 365.25).toFixed(2);
+      els.ringText.textContent = abs + 'd';
+      if (d >= 0) {
+        els.sinceText.textContent = `${abs} day${abs === 1 ? '' : 's'} since ${date}`;
+        els.modePill.textContent = 'Since';
+        els.note.textContent = 'In Safari, use Share then Add to Home Screen for the closest Apple-widget look.';
+        els.note.classList.remove('future');
+      } else {
+        els.sinceText.textContent = `${abs} day${abs === 1 ? '' : 's'} until ${date}`;
+        els.modePill.textContent = 'Until';
+        els.note.textContent = 'Future date detected: this version automatically becomes a countdown.';
+        els.note.classList.add('future');
+      }
+    }
+
+    document.getElementById('apply').addEventListener('click', () => { setState(); render(); });
+    document.getElementById('today').addEventListener('click', () => { els.date.value = localToday(); setState(); render(); });
+
+    els.name.value = q.get('name') || 'Since Date';
+    els.date.value = q.get('date') || localToday();
+    render();
+  </script>
+</body>
+</html>
