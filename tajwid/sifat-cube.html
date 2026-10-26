@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مكعب صفات الحروف</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root {
+  --font-anthropic-sans: "Noto Sans Arabic";
+  --font-anthropic-serif: "Noto Naskh Arabic";
+  --color-fg: #1f1e1d; --color-fg-muted: #6b6a66; --color-bg: #faf9f5; --color-panel: #ffffff;
+  --color-border-line: #e3e1d9; --color-ok: #2f7d4f; --color-warn: #b7791f; --color-bad: #c0392b;
+  --cds-border: 1px solid var(--color-border-line); --cds-radius: 10px;
+  --cds-chart-axis: #9a988f; --cds-chart-grid: #ebe9e2;
+  --cds-surface-popover: #ffffff; --cds-shadow-popover: 0 6px 24px rgba(0,0,0,.14);
+  --cds-text-secondary: var(--color-fg-muted);
+  --cds-dur-slow: 320ms; --cds-ease-out: cubic-bezier(.2,.7,.2,1);
+  --cds-font-size-caption: 12px; --cds-font-size-body: 15px; --cds-font-size-heading: 18px; --cds-font-size-title: 30px;
+  --cds-font-weight-medium: 500;
+  --cds-gap-xs: 6px; --cds-gap-sm: 10px; --cds-gap-md: 16px; --cds-gap-lg: 24px;
+  --cds-pad-xs: 6px; --cds-pad-sm: 10px; --cds-pad-lg: 24px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-fg: #ecebe6; --color-fg-muted: #a3a19a; --color-bg: #1c1b19; --color-panel: #262522;
+    --color-border-line: #3a3935; --cds-chart-axis: #7d7b74; --cds-chart-grid: #2f2e2b;
+    --cds-surface-popover: #2c2b28; --cds-shadow-popover: 0 6px 24px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --color-fg: #ecebe6; --color-fg-muted: #a3a19a; --color-bg: #1c1b19; --color-panel: #262522;
+  --color-border-line: #3a3935; --cds-chart-axis: #7d7b74; --cds-chart-grid: #2f2e2b;
+  --cds-surface-popover: #2c2b28; --cds-shadow-popover: 0 6px 24px rgba(0,0,0,.5);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans), sans-serif; }
+#dash-root { max-width: 1280px; margin: 0 auto; padding: 24px 16px 40px; }
+.dash-skeleton { background: color-mix(in srgb, var(--color-fg) 5%, transparent); border-radius: var(--cds-radius); min-height: 200px; }
+</style>
+<script>
+// Minimal stand-in for the Claude dashboard runtime this page was written against:
+// fixed datasets inlined below, calcs computed once, onData re-run on resize.
+(function () {
+  const DATA = {"letters":[{"id":1,"letter":"ا","label":"ا مدية","kind":"مد","makhraj":"الجوف","makhraj_detail":"","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":1},{"id":2,"letter":"و","label":"و مدية","kind":"مد","makhraj":"الجوف","makhraj_detail":"","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":1},{"id":3,"letter":"ي","label":"ي مدية","kind":"مد","makhraj":"الجوف","makhraj_detail":"","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":1},{"id":4,"letter":"أ","label":"الهمزة","kind":"حرف","makhraj":"الحلق","makhraj_detail":"أقصى الحلق","voice":"الجهر","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":2},{"id":5,"letter":"ه","label":"الهاء","kind":"حرف","makhraj":"الحلق","makhraj_detail":"أقصى الحلق","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":2},{"id":6,"letter":"ع","label":"العين","kind":"حرف","makhraj":"الحلق","makhraj_detail":"وسط الحلق","voice":"الجهر","strength":"البينية","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":3},{"id":7,"letter":"ح","label":"الحاء","kind":"حرف","makhraj":"الحلق","makhraj_detail":"وسط الحلق","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":3},{"id":8,"letter":"غ","label":"الغين","kind":"حرف","makhraj":"الحلق","makhraj_detail":"أدنى الحلق","voice":"الجهر","strength":"الرخاوة","elevation":"الاستعلاء","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":4},{"id":9,"letter":"خ","label":"الخاء","kind":"حرف","makhraj":"الحلق","makhraj_detail":"أدنى الحلق","voice":"الهمس","strength":"الرخاوة","elevation":"الاستعلاء","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":4},{"id":10,"letter":"ق","label":"القاف","kind":"حرف","makhraj":"اللسان","makhraj_detail":"أقصى اللسان","voice":"الجهر","strength":"الشدة","elevation":"الاستعلاء","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":1,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":5},{"id":11,"letter":"ك","label":"الكاف","kind":"حرف","makhraj":"اللسان","makhraj_detail":"أقصى اللسان","voice":"الهمس","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":6},{"id":12,"letter":"ج","label":"الجيم","kind":"حرف","makhraj":"اللسان","makhraj_detail":"وسط اللسان","voice":"الجهر","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":1,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":7},{"id":13,"letter":"ش","label":"الشين","kind":"حرف","makhraj":"اللسان","makhraj_detail":"وسط اللسان","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":1,"istitala":0,"makhraj_no":7},{"id":14,"letter":"ي","label":"الياء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"وسط اللسان","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":1,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":7},{"id":15,"letter":"ض","label":"الضاد","kind":"حرف","makhraj":"اللسان","makhraj_detail":"حافة اللسان","voice":"الجهر","strength":"الرخاوة","elevation":"الاستعلاء","closure":"الإطباق","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":1,"makhraj_no":8},{"id":16,"letter":"ل","label":"اللام","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف اللسان","voice":"الجهر","strength":"البينية","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":0,"lin":0,"inhiraf":1,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":9},{"id":17,"letter":"ن","label":"النون","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف اللسان","voice":"الجهر","strength":"البينية","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":10},{"id":18,"letter":"ر","label":"الراء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف اللسان","voice":"الجهر","strength":"البينية","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":0,"lin":0,"inhiraf":1,"takrir":1,"tafashi":0,"istitala":0,"makhraj_no":11},{"id":19,"letter":"ط","label":"الطاء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أصول الثنايا)","voice":"الجهر","strength":"الشدة","elevation":"الاستعلاء","closure":"الإطباق","fluency":"الإصمات","safir":0,"qalqala":1,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":12},{"id":20,"letter":"د","label":"الدال","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أصول الثنايا)","voice":"الجهر","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":1,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":12},{"id":21,"letter":"ت","label":"التاء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أصول الثنايا)","voice":"الهمس","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":12},{"id":22,"letter":"ظ","label":"الظاء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أطراف الثنايا)","voice":"الجهر","strength":"الرخاوة","elevation":"الاستعلاء","closure":"الإطباق","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":13},{"id":23,"letter":"ذ","label":"الذال","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أطراف الثنايا)","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":13},{"id":24,"letter":"ث","label":"الثاء","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (أطراف الثنايا)","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":13},{"id":25,"letter":"ص","label":"الصاد","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (فوق الثنايا السفلى)","voice":"الهمس","strength":"الرخاوة","elevation":"الاستعلاء","closure":"الإطباق","fluency":"الإصمات","safir":1,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":14},{"id":26,"letter":"س","label":"السين","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (فوق الثنايا السفلى)","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":1,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":14},{"id":27,"letter":"ز","label":"الزاي","kind":"حرف","makhraj":"اللسان","makhraj_detail":"طرف (فوق الثنايا السفلى)","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":1,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":14},{"id":28,"letter":"ف","label":"الفاء","kind":"حرف","makhraj":"الشفتان","makhraj_detail":"بطن الشفة السفلى","voice":"الهمس","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":15},{"id":29,"letter":"و","label":"الواو","kind":"حرف","makhraj":"الشفتان","makhraj_detail":"الشفتان معاً","voice":"الجهر","strength":"الرخاوة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإصمات","safir":0,"qalqala":0,"lin":1,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":16},{"id":30,"letter":"ب","label":"الباء","kind":"حرف","makhraj":"الشفتان","makhraj_detail":"الشفتان معاً","voice":"الجهر","strength":"الشدة","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":1,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":16},{"id":31,"letter":"م","label":"الميم","kind":"حرف","makhraj":"الشفتان","makhraj_detail":"الشفتان معاً","voice":"الجهر","strength":"البينية","elevation":"الاستفال","closure":"الانفتاح","fluency":"الإذلاق","safir":0,"qalqala":0,"lin":0,"inhiraf":0,"takrir":0,"tafashi":0,"istitala":0,"makhraj_no":16}],"makharij":[{"no":1,"general":"الجوف","name":"الجوف","place":"الخلاء الممتد من الحلق إلى الفم؛ تخرج منه حروف المد الثلاثة بلا اعتماد على عضو"},{"no":2,"general":"الحلق","name":"أقصى الحلق","place":"أبعد الحلق عن الفم، عند الأوتار الصوتية (الحنجرة)"},{"no":3,"general":"الحلق","name":"وسط الحلق","place":"وسط الحلق، عند لسان المزمار"},{"no":4,"general":"الحلق","name":"أدنى الحلق","place":"أقرب الحلق إلى الفم، عند جذر اللسان"},{"no":5,"general":"اللسان","name":"أقصى اللسان مع الحنك الأعلى","place":"أقصى اللسان مع ما يحاذيه من الحنك الأعلى (اللهاة)"},{"no":6,"general":"اللسان","name":"أقصى اللسان تحت مخرج القاف","place":"أقصى اللسان أسفل مخرج القاف قليلاً مع ما يحاذيه من الحنك"},{"no":7,"general":"اللسان","name":"وسط اللسان مع الحنك الأعلى","place":"وسط اللسان مع ما يحاذيه من الحنك الأعلى (الحنك الصلب)"},{"no":8,"general":"اللسان","name":"حافة اللسان مع الأضراس العليا","place":"إحدى حافتي اللسان مع ما يليها من الأضراس العليا"},{"no":9,"general":"اللسان","name":"أدنى حافة اللسان مع لثة الأسنان العليا","place":"من أدنى حافتي اللسان إلى منتهى طرفه مع ما يحاذيه من لثة الأسنان العليا"},{"no":10,"general":"اللسان","name":"طرف اللسان مع لثة الثنيتين العليين","place":"طرف اللسان مع لثة الثنيتين العليين، تحت مخرج اللام قليلاً"},{"no":11,"general":"اللسان","name":"طرف اللسان مع ظهره","place":"طرف اللسان مع شيء من ظهره، قرب مخرج النون"},{"no":12,"general":"اللسان","name":"طرف اللسان مع أصول الثنايا العليا","place":"طرف اللسان مع أصول الثنيتين العليين"},{"no":13,"general":"اللسان","name":"طرف اللسان مع أطراف الثنايا العليا","place":"طرف اللسان مع أطراف الثنيتين العليين"},{"no":14,"general":"اللسان","name":"طرف اللسان فويق الثنايا السفلى","place":"طرف اللسان مع ما بين الثنايا العليا والسفلى، فوق الثنايا السفلى قليلاً"},{"no":15,"general":"الشفتان","name":"بطن الشفة السفلى مع أطراف الثنايا العليا","place":"باطن الشفة السفلى مع أطراف الثنيتين العليين"},{"no":16,"general":"الشفتان","name":"الشفتان معاً","place":"الشفتان معاً: منفرجتان قليلاً للواو، ومنطبقتان للباء والميم"},{"no":17,"general":"الخيشوم","name":"الخيشوم","place":"التجويف الأنفي؛ مخرج الغنة التي تصاحب النون والميم، ولا يخرج منه حرف مستقل"}]};
+  const store = {};
+  for (const id in DATA) store[id] = DATA[id];
+  const listeners = [];
+  const light = ['#2f6fdb', '#d9622b', '#2f9e6a', '#b5489b', '#c29a12', '#6a5acd', '#1b9aaa', '#8c6d4f'];
+  const dark  = ['#6f9bf0', '#f08a55', '#56c491', '#da78c2', '#e2be3c', '#9a8cf0', '#4cc3d1', '#b8977a'];
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : mq.matches; };
+  const colors = [];
+  const setColors = () => { const c = isDark() ? dark : light; for (let i = 0; i < 8; i++) colors[i] = c[i]; };
+  setColors();
+  const run = () => listeners.forEach(fn => { try { fn(); } catch (e) { console.error(e); } });
+  window.dash = {
+    colors,
+    data(id) {
+      if (!(id in store)) return { status: 'missing', data: [], meta: [], refreshing: false };
+      const d = store[id];
+      const columns = Array.isArray(d) && d.length ? Object.keys(d[0]) : [];
+      return { status: 'ok', data: d, rows: d, columns, meta: [], refreshing: false };
+    },
+    calc(id, { inputs, fn }) { store[id] = fn(...inputs.map(i => store[i])); },
+    loader() {},
+    onData(fn) { listeners.push(fn); fn(); },
+    refresh() {}, params() { return {}; }, setParams() {}, resetParams() {}, setLink() {}
+  };
+  let t;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(run, 120); });
+  mq.addEventListener('change', () => { setColors(); run(); });
+})();
+</script>
+</head>
+<body>
+<div id="dash-root">
+<style>
+#dash-root { --dash-gutter: var(--cds-pad-lg); }
+.sc { position: relative; direction: rtl; text-align: right; font-family: var(--font-anthropic-sans), "Noto Naskh Arabic", "Noto Sans Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif; color: var(--color-fg); }
+.sc-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--cds-gap-xs) var(--cds-gap-lg); margin-bottom: var(--cds-gap-md); }
+.sc-title { font-family: var(--font-anthropic-serif), "Noto Naskh Arabic", serif; font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+.sc-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+.sc .sc-take b { font-weight: 600; color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.sc-bar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-sm); align-items: center; margin-bottom: var(--cds-gap-xs); }
+.sc-lbl { font-size: var(--sc-cap); color: var(--color-fg-muted); }
+.sc-chip { font: inherit; font-size: var(--sc-cap); line-height: 1.4; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); cursor: pointer; display: inline-flex; gap: 6px; align-items: baseline; }
+.sc-chip:hover { border-color: var(--color-fg-muted); }
+.sc-chip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.sc-chip[hidden] { display: none; }
+.sc-chip .sc-n { font-variant-numeric: tabular-nums; opacity: .65; }
+.sc-mnemo { min-height: 1.6em; margin: 0 0 var(--cds-gap-md); font-size: var(--sc-cap); color: var(--color-fg-muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.sc-mnemo .ar { color: var(--color-fg); font-size: 1.1em; }
+.sc-mnemo .q { color: var(--color-fg); }
+.sc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 18rem); grid-template-areas: "cube side" "mk mk" "flat flat"; gap: var(--cds-gap-md); margin-bottom: var(--cds-gap-md); }
+#cube { grid-area: cube; } .sc-side { grid-area: side; } #flat { grid-area: flat; } #makharij { grid-area: mk; }
+.sc-narrow-note { display: none; }
+@media (max-width: 860px) {
+  .sc-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mk" "flat" "cube" "side"; }
+  .sc-narrow-note { display: block; }
+}
+.sc { --sc-cap: calc(var(--cds-font-size-caption) * 1.08); }
+.sc-side { display: flex; flex-direction: column; gap: var(--cds-gap-md); min-width: 0; }
+.sc-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.sc-card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-xs) var(--cds-gap-sm); }
+.sc-card h2 { margin: 0 0 2px; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.sc-note { margin: 0 0 var(--cds-gap-sm); color: var(--color-fg-muted); font-size: var(--sc-cap); }
+.sc-btns { display: inline-flex; flex-wrap: wrap; gap: var(--cds-gap-xs); align-items: center; }
+.sc-btns input[type=range] { width: 90px; accent-color: var(--color-fg); }
+.sc-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: 999px; overflow: hidden; }
+.sc-seg button { font: inherit; font-size: var(--sc-cap); padding: 2px 10px; border: 0; background: var(--color-panel); color: var(--color-fg); cursor: pointer; }
+.sc-seg button[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); }
+.sc-stage-box { position: relative; min-height: 340px; }
+.sc-stage-box svg { display: block; width: 100%; height: auto; direction: ltr; touch-action: none; cursor: grab; -webkit-user-select: none; user-select: none; outline: none; }
+.sc-stage-box svg:focus-visible { box-shadow: 0 0 0 2px var(--color-fg-muted); border-radius: var(--cds-radius); }
+.sc-stage-box svg.is-drag { cursor: grabbing; }
+.sc-stage-box svg g.nd text, .sc-stage-box svg g.cl .badge { pointer-events: none; }
+.sc-stage-box svg g.nd { cursor: pointer; }
+.sc-stage-box svg g.labels text { cursor: pointer; }
+.sc-tip { position: absolute; pointer-events: none; display: none; z-index: 2; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--sc-cap); max-width: 17rem; direction: rtl; text-align: right; }
+.sc-tip .sc-tip-l { font-size: 1.7em; line-height: 1.25; }
+.sc-tip .sc-tip-l small { font-size: .55em; color: var(--cds-text-secondary); margin-inline-start: 6px; }
+.sc-tip .sc-tip-m { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.sc-tip .sc-tip-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.sc-tip .sc-tip-k { color: var(--cds-text-secondary); font-size: .9em; margin-top: 6px; }
+.sc-tag { border: 1px solid var(--cds-border); border-radius: 999px; padding: 0 7px; font-size: .95em; white-space: nowrap; }
+.sc-tag.on { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.sc-fail { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 340px; color: var(--color-fg-muted); font-size: var(--sc-cap); }
+.sc-fail[hidden] { display: none; }
+.sc-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+.sc-leg { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; font-size: var(--sc-cap); align-items: center; margin-top: var(--cds-gap-sm); }
+.sc-leg .k { color: var(--color-fg-muted); white-space: nowrap; }
+.sc-leg .v { line-height: 1.35; }
+.sc-leg .ar { font-size: 1.08em; }
+.sc-leg .en { color: var(--color-fg-muted); }
+.sc-sw { display: inline-block; width: 18px; height: 18px; vertical-align: -4px; margin-inline-end: 6px; box-sizing: border-box; border: 1.25px solid var(--cds-chart-axis); background: var(--color-bg); }
+.sc-sw.c { border-radius: 50%; }
+.sc-sw.s { border-radius: 5px; }
+.sc-sw.f { background: var(--color-fg); border-color: var(--color-fg); }
+.sc-leg-sep { grid-column: 1 / -1; height: 1px; background: var(--color-border-line); margin: 2px 0; }
+.sc-det { direction: rtl; text-align: right; font-size: var(--sc-cap); }
+.sc-det .big { font-family: var(--font-anthropic-serif), "Noto Naskh Arabic", serif; font-size: 2.4em; line-height: 1.2; }
+.sc-det .big small { font-size: .42em; color: var(--color-fg-muted); margin-inline-start: 8px; font-family: var(--font-anthropic-sans), "Noto Naskh Arabic", sans-serif; }
+.sc-det .m { color: var(--color-fg-muted); margin: 2px 0 6px; }
+.sc-det .row { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+.sc-det h3 { margin: 10px 0 3px; font-size: 1em; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+.sc-det .nb { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 3px 0; }
+.sc-det .nb .lk { color: var(--color-fg-muted); }
+.sc-det .muted { color: var(--color-fg-muted); }
+.sc-det .hint { color: var(--color-fg-muted); }
+.sc-flat { display: grid; gap: 4px; direction: rtl; }
+.sc-flat .h { font-size: var(--sc-cap); color: var(--color-fg-muted); text-align: center; padding: 4px; align-self: end; }
+.sc-flat .h .ar, .sc-flat .rh .ar { font-size: 1.1em; color: var(--color-fg); display: inline-block; cursor: pointer; border-bottom: 1px dashed transparent; }
+.sc-flat .h .ar { display: block; }
+.sc-flat .ar:hover { border-bottom-color: var(--color-fg-muted); }
+.sc-flat .ar.on { background: var(--color-fg); color: var(--color-bg); border-radius: 6px; padding: 0 5px; }
+.sc-flat .rh { font-size: var(--sc-cap); color: var(--color-fg-muted); padding: 4px; padding-inline-end: 10px; display: flex; flex-direction: column; justify-content: center; white-space: nowrap; text-align: right; }
+.sc-flat .cell { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); min-height: 54px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; padding: 6px; background: var(--color-bg); }
+.sc-flat .cell.empty { background: transparent; border-style: dashed; }
+.sc-node { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; font-family: inherit; padding: 0; box-sizing: border-box; border: 0; background: transparent; color: var(--color-fg); cursor: pointer; position: relative; }
+.sc-node svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.sc-node svg text { font-family: inherit; font-size: 18px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.sc-node:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+@media (max-width: 600px) { .sc-flat .sc-node { width: 30px; height: 30px; } .sc-flat .cell { gap: 3px; padding: 4px; } }
+.sc-node.dim { opacity: .18; }
+.sc-node.far { opacity: .35; }
+.sc-node.mini { width: 30px; height: 30px; }
+.sc-sw svg { width: 20px; height: 20px; vertical-align: -5px; margin-inline-end: 6px; overflow: visible; }
+@media (prefers-reduced-motion: no-preference) {
+  .sc-node, .sc-stage-box svg g.nd { transition: opacity var(--cds-dur-slow) var(--cds-ease-out); }
+}
+.sc-mk-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: var(--cds-gap-md); align-items: start; }
+@media (max-width: 980px) { .sc-mk-grid { grid-template-columns: minmax(0, 1fr); } }
+.sc-mk-stage { overflow-x: auto; direction: ltr; }
+.sc-mk-stage svg { display: block; width: 100%; min-width: 600px; height: auto; direction: ltr; }
+.sc-mk .jawf { fill: none; stroke-width: 4; stroke-dasharray: 10 8; }
+.sc-mk .jawf-halo { fill: none; stroke: #fff; stroke-width: 8; opacity: .85; }
+.sc-mk .anat { pointer-events: none; }
+.sc-mk .lead { fill: none; stroke: var(--color-fg); stroke-width: 1.6; opacity: .8; }
+.sc-mk .mk { cursor: pointer; }
+.sc-mk .mk circle.dot { stroke: #fff; stroke-width: 2; }
+.sc-mk .mk circle.ring { fill: none; stroke: var(--color-fg); stroke-width: 3; }
+.sc-mk .mk text.no { font-size: 15px; fill: #fff; text-anchor: middle; dominant-baseline: central; font-weight: 700; pointer-events: none; }
+.sc-mk g.lbl { cursor: pointer; }
+.sc-mk g.lbl rect { fill: var(--color-panel); fill-opacity: .94; stroke: var(--color-border-line); stroke-width: 1; }
+.sc-mk g.lbl text { font-size: 23px; fill: var(--color-fg); dominant-baseline: central; text-anchor: middle; }
+.sc-mk g.lbl.on rect { stroke: var(--color-fg); stroke-width: 2; }
+.sc-mk g.lbl.on text { font-weight: 700; }
+.sc-mk-credit { margin-top: var(--cds-gap-xs); }
+.sc-mk text.ttl { font-size: 13px; font-weight: 600; dominant-baseline: central; pointer-events: none; paint-order: stroke; stroke: rgba(255,255,255,.85); stroke-width: 4px; stroke-linejoin: round; }
+.sc-mk .dim { opacity: .22; }
+@media (prefers-reduced-motion: no-preference) { .sc-mk .mk, .sc-mk text.lbl, .sc-mk .lead { transition: opacity var(--cds-dur-slow) var(--cds-ease-out); } }
+.sc-mk-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); margin-top: var(--cds-gap-xs); font-size: var(--sc-cap); }
+.sc-mk-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--sw); margin-inline-end: 6px; vertical-align: -1px; }
+.sc-mk-table { width: 100%; border-collapse: collapse; font-size: var(--sc-cap); }
+.sc-mk-table th { text-align: right; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 4px 6px; border-bottom: 1px solid var(--color-border-line); position: sticky; top: 0; background: var(--color-panel); }
+.sc-mk-table td { padding: 4px 6px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.sc-mk-table td.no { font-variant-numeric: tabular-nums; color: var(--color-fg-muted); white-space: nowrap; }
+.sc-mk-table td.no::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--sw); margin-inline-end: 5px; }
+.sc-mk-table td.letters { font-size: 1.15em; white-space: nowrap; }
+.sc-mk-table tr { cursor: pointer; }
+.sc-mk-table tr:hover td { background: color-mix(in srgb, var(--color-fg) 4%, transparent); }
+.sc-mk-table tr.on td { background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+.sc-mk-table tr.dim td { opacity: .35; }
+.sc-mk-box { max-height: 520px; overflow: auto; }
+
+</style>
+
+<div class="sc" id="sc-root">
+  <header class="sc-head">
+    <h1 class="sc-title" id="sc-title">مكعب صفات الحروف</h1>
+    <p class="sc-take" id="sc-take">يتوزع <b data-source="occupancy" data-field="letters">—</b> حرفًا على <b data-source="occupancy" data-field="cells">—</b> تركيبة فقط من أصل <b data-source="occupancy" data-field="possible">—</b> تركيبة ممكنة لعائلات الصفات الخمس؛ وأكبر مجموعة تضم <b data-source="occupancy" data-field="biggest">—</b> أحرف تتطابق في الخمس كلها ولا تختلف إلا بالمخرج والصفات المنفردة.</p>
+  </header>
+
+  <div class="sc-bar" id="sc-filters">
+    <span class="sc-lbl">الصفات المنفردة</span>
+    <button type="button" class="sc-chip" data-group="extra" data-key="safir" data-ar="الصفير" aria-pressed="false"><span>الصفير</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=الصفير">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="qalqala" data-ar="القلقلة" aria-pressed="false"><span>القلقلة</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=القلقلة">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="lin" data-ar="اللين" aria-pressed="false"><span>اللين</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=اللين">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="inhiraf" data-ar="الانحراف" aria-pressed="false"><span>الانحراف</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=الانحراف">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="takrir" data-ar="التكرير" aria-pressed="false"><span>التكرير</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=التكرير">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="tafashi" data-ar="التفشي" aria-pressed="false"><span>التفشي</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=التفشي">—</span></button>
+    <button type="button" class="sc-chip" data-group="extra" data-key="istitala" data-ar="الاستطالة" aria-pressed="false"><span>الاستطالة</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=extra&amp;key=الاستطالة">—</span></button>
+    <span class="sc-lbl" style="margin-inline-start: var(--cds-gap-sm)">المخرج</span>
+    <button type="button" class="sc-chip" data-group="makhraj" data-key="الجوف" data-ar="الجوف" aria-pressed="false"><span>الجوف</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=makhraj&amp;key=الجوف">—</span></button>
+    <button type="button" class="sc-chip" data-group="makhraj" data-key="الحلق" data-ar="الحلق" aria-pressed="false"><span>الحلق</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=makhraj&amp;key=الحلق">—</span></button>
+    <button type="button" class="sc-chip" data-group="makhraj" data-key="اللسان" data-ar="اللسان" aria-pressed="false"><span>اللسان</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=makhraj&amp;key=اللسان">—</span></button>
+    <button type="button" class="sc-chip" data-group="makhraj" data-key="الشفتان" data-ar="الشفتان" aria-pressed="false"><span>الشفتان</span><span class="sc-n" data-source="groups" data-field="n" data-where="group=makhraj&amp;key=الشفتان">—</span></button>
+    <button type="button" class="sc-chip" id="sc-clear" hidden>✕ مسح التحديد</button>
+  </div>
+  <p class="sc-mnemo" id="sc-mnemo" data-source="letters"></p>
+
+  <div class="sc-grid">
+    <section class="sc-card" id="cube" data-source="letters">
+      <div class="sc-card-head">
+        <div>
+          <h2>العائلات الخمس: ثلاثة أبعاد + شكل + تعبئة</h2>
+          <p class="sc-note">اسحب أو استخدم الأسهم للتدوير. انقر على عنوان محور لعزل صفة، وانقر على حرف لتثبيته. <span class="sc-narrow-note">يُقرأ المكعب أفضل على شاشة أعرض؛ العرض المبسوط أعلاه يحمل المعلومات نفسها.</span></p>
+        </div>
+        <div class="sc-btns">
+          <span class="sc-seg" role="group" aria-label="التلوين بحسب">
+            <button type="button" id="sc-col-none" aria-pressed="true">بلا لون</button>
+            <button type="button" id="sc-col-makhraj" aria-pressed="false">المخرج</button>
+          </span>
+          <input type="range" id="sc-zoom" min="0.75" max="1.6" step="0.05" value="1" aria-label="تكبير">
+          <button type="button" class="sc-chip" id="sc-spin" aria-pressed="true">⟳ دوران</button>
+          <button type="button" class="sc-chip" id="sc-reset">إعادة الضبط</button>
+        </div>
+      </div>
+      <div class="sc-stage-box dash-skeleton" id="sc-stagebox">
+        <svg id="sc-svg" width="100%" viewBox="0 0 600 460" role="img" tabindex="0" aria-label="الحروف موزعة في شبكة ثلاثية الأبعاد بحسب صفاتها"></svg>
+        <div class="sc-fail" id="sc-fail" hidden>تعذر التحميل</div>
+      </div>
+    </section>
+
+    <div class="sc-side">
+      <aside class="sc-card" id="detail" data-source="letters">
+        <h2>الحرف</h2>
+        <div class="sc-det" id="sc-det"><div class="hint">انقر على حرف لعرض شركائه في الخانة (الصفات الخمس نفسها) والحروف التي تبعد عنه صفة واحدة — وهي الأزواج الصغرى التي تستحق التدريب.</div></div>
+      </aside>
+
+      <aside class="sc-card" id="legend">
+        <h2>الترميز</h2>
+        <div class="sc-leg">
+          <span class="k">المحور الأفقي</span><span class="v"><span class="ar">الشدة · البينية · الرخاوة</span><br><span class="en">ترتيبي من اليسار إلى اليمين</span></span>
+          <span class="k">المحور الرأسي</span><span class="v"><span class="ar">الاستفال ↓ · الاستعلاء ↑</span><br><span class="en">ارتفاع اللسان</span></span>
+          <span class="k">العمق</span><span class="v"><span class="ar">الهمس · الجهر</span><br><span class="en">من الخلف إلى الأمام</span></span>
+          <span class="sc-leg-sep"></span>
+          <span class="k">الشكل</span><span class="v" id="sc-leg-shape"></span>
+          <span class="k">اللون</span><span class="v" id="sc-leg-color"></span>
+          <span class="k">التعبئة</span><span class="v"><span class="sc-sw c f"></span><span class="ar">الإذلاق</span> <span class="en">مقابل</span> <span class="sc-sw c"></span><span class="ar">الإصمات</span><br><span class="en">معبأ = مذلق، مفرغ = مصمت</span></span>
+          <span class="k">الرمز</span><span class="v"><span class="ar">آ وٓ يٓ</span><span class="en"> تميّز حروف المد الثلاثة</span></span>
+          <span class="k">الشارة</span><span class="v"><span class="en">عدد الحروف المشتركة في الموضع نفسه؛ تختلف بالشكل أو التعبئة</span></span>
+        </div>
+      </aside>
+    </div>
+
+    <section class="sc-card sc-mk" id="makharij" data-source="letters makharij">
+      <h2>خريطة المخارج</h2>
+      <p class="sc-note">مقطع جانبي لجهاز النطق: المواضع العامة الخمسة بالألوان، والمخارج التفصيلية السبعة عشر بالأرقام، والحروف عند مواضعها. مرّر لعرض الوصف، وانقر على مخرج لعزل حروفه في المكعب.</p>
+      <div class="sc-mk-grid">
+        <div>
+          <div class="sc-mk-stage">
+            <svg id="sc-mk" viewBox="0 0 938 1200" width="100%" role="img" aria-label="مقطع جانبي للفم والحلق مع مواضع مخارج الحروف">
+              <image id="sc-mk-img" x="0" y="0" width="938" height="1200" preserveAspectRatio="xMidYMid meet"/>
+              <path class="jawf-halo" d="M 640,1192 C 642,1100 652,990 688,890 C 700,790 690,690 668,620 C 650,560 620,512 560,486 C 480,470 380,472 318,484 C 290,520 262,562 228,584 L 180,582"/>
+              <path class="jawf" d="M 640,1192 C 642,1100 652,990 688,890 C 700,790 690,690 668,620 C 650,560 620,512 560,486 C 480,470 380,472 318,484 C 290,520 262,562 228,584 L 180,582"/>
+              <path class="jawf-head" d="M 160,582 l 26,-13 l -3,26 z"/>
+              <g id="sc-mk-dyn"></g>
+            </svg>
+          </div>
+          <div class="sc-mk-legend" id="sc-mk-legend"></div>
+          <p class="sc-note sc-mk-credit">الرسم التشريحي: OpenStax College, <i>Anatomy &amp; Physiology</i> (CC BY 3.0، creativecommons.org/licenses/by/3.0) — عُدِّل: اقتُصّ، وحُذفت التسميات الإنجليزية، وقُلب أفقيًا؛ العلامات والحروف من إعداد هذه اللوحة.</p>
+        </div>
+        <div class="sc-mk-box">
+          <table class="sc-mk-table" id="sc-mk-table" data-source="makharij" data-row-key="no">
+            <thead><tr><th data-field="no">#</th><th data-field="general">الموضع</th><th data-field="name">المخرج</th><th data-source="mkLetters" data-field="letters">الحروف</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="sc-card" id="flat" data-source="letters">
+      <h2>العرض المبسوط</h2>
+      <p class="sc-note">الشبكة نفسها مبسوطة: الأعمدة بحسب الشدة، والصفوف بحسب الاستعلاء × الجهر. انقر على عنوان لعزله، وعلى حرف لتثبيته.</p>
+      <div class="sc-flat" id="sc-flat"></div>
+    </section>
+  </div>
+
+  <div class="sc-tip" id="sc-tip" role="status"></div>
+</div>
+
+<script src="sifat-cube-img.js"></script>
+<script>
+dash.calc('occupancy', {
+  title: 'الخانات المشغولة',
+  description: 'عدد الحروف، وعدد الخانات المشغولة من بين 48 تركيبة ممكنة للعائلات الخمس، وحجم أكثر الخانات امتلاءً.',
+  inputs: ['letters'],
+  fn: (letters) => {
+    const cells = {};
+    for (const r of letters) {
+      const k = [r.voice, r.strength, r.elevation, r.closure, r.fluency].join('|');
+      cells[k] = (cells[k] || 0) + 1;
+    }
+    const counts = Object.values(cells);
+    return { letters: letters.length, cells: counts.length, possible: 2 * 3 * 2 * 2 * 2, biggest: Math.max(0, ...counts) };
+  }
+});
+
+dash.calc('groups', {
+  title: 'عدد الحروف لكل صفة ومخرج',
+  description: 'عدد الحروف التي تحمل كل صفة منفردة، وعدد الحروف في كل مخرج عام.',
+  inputs: ['letters'],
+  fn: (letters) => {
+    const out = [];
+    for (const [key, name] of [['safir', 'الصفير'], ['qalqala', 'القلقلة'], ['lin', 'اللين'], ['inhiraf', 'الانحراف'], ['takrir', 'التكرير'], ['tafashi', 'التفشي'], ['istitala', 'الاستطالة']]) {
+      out.push({ group: 'extra', key: name, n: letters.filter(r => Number(r[key]) === 1).length });
+    }
+    for (const m of ['الجوف', 'الحلق', 'اللسان', 'الشفتان']) {
+      out.push({ group: 'makhraj', key: m, n: letters.filter(r => r.makhraj === m).length });
+    }
+    return out;
+  }
+});
+
+dash.calc('mkLetters', {
+  title: 'حروف كل مخرج',
+  description: 'الحروف التي تخرج من كل مخرج من المخارج السبعة عشر، مجموعة من جدول الحروف بحسب رقم المخرج.',
+  inputs: ['makharij', 'letters'],
+  fn: (makharij, letters) => makharij.map(m => ({
+    no: Number(m.no),
+    letters: letters.filter(l => Number(l.makhraj_no) === Number(m.no)).map(l => l.kind === 'مد' ? l.letter + '\u0653' : l.letter).join(' ')
+  }))
+});
+</script>
+
+<script>
+(function () {
+  const EXTRA = [['safir', 'الصفير'], ['qalqala', 'القلقلة'], ['lin', 'اللين'], ['inhiraf', 'الانحراف'], ['takrir', 'التكرير'], ['tafashi', 'التفشي'], ['istitala', 'الاستطالة']];
+  const MAKHRAJ = ['الجوف', 'الحلق', 'اللسان', 'الشفتان'];
+  const XS = ['الشدة', 'البينية', 'الرخاوة'];
+  const YS = ['الاستفال', 'الاستعلاء'];
+  const ZS = ['الهمس', 'الجهر'];
+  const FAM = ['voice', 'strength', 'elevation', 'closure', 'fluency'];
+  const FAMKEY = { 'الجهر': 'voice', 'الهمس': 'voice', 'الشدة': 'strength', 'البينية': 'strength', 'الرخاوة': 'strength', 'الاستعلاء': 'elevation', 'الاستفال': 'elevation', 'الإطباق': 'closure', 'الانفتاح': 'closure', 'الإذلاق': 'fluency', 'الإصمات': 'fluency' };
+  const POSKEY = { voice: 'k', strength: 'i', elevation: 'j' };
+  const MNEMO = {
+    'الهمس': 'فحثه شخص سكت', 'الجهر': 'ما عدا حروف الهمس',
+    'الشدة': 'أجد قط بكت', 'البينية': 'لن عمر', 'الرخاوة': 'ما عدا حروف الشدة والبينية',
+    'الاستعلاء': 'خص ضغط قظ', 'الاستفال': 'ما عدا حروف الاستعلاء',
+    'الإطباق': 'ص ض ط ظ', 'الانفتاح': 'ما عدا حروف الإطباق',
+    'الإذلاق': 'فر من لب', 'الإصمات': 'ما عدا حروف الإذلاق',
+    'الصفير': 'ص س ز', 'القلقلة': 'قطب جد', 'اللين': 'الواو والياء الساكنتان المفتوح ما قبلهما',
+    'الانحراف': 'ل ر', 'التكرير': 'ر', 'التفشي': 'ش', 'الاستطالة': 'ض'
+  };
+  // makhraj diagram: marker positions on the illustration and where each label sits (viewBox units)
+  const MK_M = {1:[630,1100],2:[600,888],3:[655,700],4:[665,580],5:[615,515],6:[560,470],7:[430,470],8:[350,500],9:[262,465],10:[242,480],11:[268,500],12:[222,495],13:[240,555],14:[255,605],15:[200,580],16:[160,560],17:[380,330]};
+  const MK_L = {1:[520,1100],2:[800,888],3:[800,700],4:[800,580],5:[720,500],6:[585,418],7:[430,425],8:[352,552],9:[128,440],10:[128,482],12:[128,524],11:[128,566],16:[128,608],15:[128,650],13:[128,692],14:[128,734],17:[455,330]};
+  const MK_NOLEAD = new Set([]);
+  const MK_HUE = { 'الجوف': 0, 'الحلق': 1, 'اللسان': 2, 'الشفتان': 3, 'الخيشوم': 4 };
+  let mkRows = [];
+  const ACC = dash.colors[0];
+  const mix = c => 'color-mix(in srgb, ' + c + ' 24%, var(--color-bg))';
+  const ACC_FILL = mix(ACC);
+
+  const root = document.getElementById('sc-root');
+  const stageBox = document.getElementById('sc-stagebox');
+  const svgEl = document.getElementById('sc-svg');
+  const svg = d3.select(svgEl);
+  const failEl = document.getElementById('sc-fail');
+  const tip = document.getElementById('sc-tip');
+  const flatEl = document.getElementById('sc-flat');
+  const detEl = document.getElementById('sc-det');
+  const mnemoEl = document.getElementById('sc-mnemo');
+  const clearBtn = document.getElementById('sc-clear');
+  const spinBtn = document.getElementById('sc-spin');
+  const resetBtn = document.getElementById('sc-reset');
+  const zoomEl = document.getElementById('sc-zoom');
+  const colBtns = { none: document.getElementById('sc-col-none'), makhraj: document.getElementById('sc-col-makhraj') };
+  const legColor = document.getElementById('sc-leg-color');
+  const legShape = document.getElementById('sc-leg-shape');
+
+  // the view is kept inside a window where no two lattice positions project onto each other
+  // yaw is free (full turn); pitch stays off the edge-on view where front and back positions would coincide
+  const YAW0 = -0.55, PITCH0 = 0.45, PITCH_MIN = 0.3, PITCH_MAX = 1.1;
+  // spacing of the lattice, in units later multiplied by the scale S: depth and width get more room than height
+  const DX = 1.3, DY = 1.1, DZ = 1.4;
+  const RH = Math.hypot(DX, DZ / 2); // horizontal radius of the lattice, reached at some yaw
+  const pos = (i, j, k) => [(i - 1) * DX, (j - 0.5) * DY, (k - 0.5) * DZ];
+  let yaw = YAW0, pitch = PITCH0, zoom = 1;
+  let rows = [];
+  let filt = { extra: null, makhraj: null, family: null, mk: null };
+  let pinned = null;
+  let colorBy = 'none';
+  let spinning = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let hovering = false, drag = null, dragMoved = false;
+  let W = 600, H = 460, S = 150, R = 14;
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const glyph = r => r.kind === 'مد' ? r.letter + 'ٓ' : r.letter;
+  const cellOf = r => ({ i: XS.indexOf(r.strength), j: YS.indexOf(r.elevation), k: ZS.indexOf(r.voice) });
+  const posKey = r => { const c = cellOf(r); return c.i + '-' + c.j + '-' + c.k; };
+  const isAcc = r => r.closure === 'الإطباق';
+  const isDhalaq = r => r.fluency === 'الإذلاق';
+  const diffs = (a, b) => FAM.filter(k => a[k] !== b[k]);
+
+  function active(r) {
+    if (filt.makhraj && r.makhraj !== filt.makhraj) return false;
+    if (filt.extra && Number(r[filt.extra]) !== 1) return false;
+    if (filt.family && r[FAMKEY[filt.family]] !== filt.family) return false;
+    if (filt.mk && Number(r.makhraj_no) !== filt.mk) return false;
+    return true;
+  }
+  function rel(r) {
+    if (!pinned) return '';
+    if (r.id === pinned.id) return 'self';
+    const d = diffs(pinned, r);
+    if (d.length === 0) return 'mate';
+    if (d.length === 1) return 'nb';
+    return 'far';
+  }
+  // Shape encodes الإطباق (hexagon) vs الانفتاح (circle); fill encodes الإذلاق (solid) vs الإصمات (hollow);
+  // colour is free, and the toggle above the cube can spend it on the makhraj.
+  function nodeStyle(r) {
+    if (colorBy === 'makhraj') {
+      const c = dash.colors[MAKHRAJ.indexOf(r.makhraj)];
+      if (isDhalaq(r)) { const deep = 'color-mix(in srgb, ' + c + ' 72%, var(--color-fg))'; return { fill: deep, stroke: deep, sw: 2, text: 'var(--color-bg)' }; }
+      return { fill: mix(c), stroke: c, sw: 2, text: 'var(--color-fg)' };
+    }
+    if (isDhalaq(r)) return { fill: 'var(--color-fg)', stroke: 'var(--color-fg)', sw: 1.25, text: 'var(--color-bg)' };
+    return { fill: 'var(--color-bg)', stroke: 'var(--cds-chart-axis)', sw: 1.5, text: 'var(--color-fg)', lidStroke: 'var(--color-fg)' };
+  }
+  // path for a node of "radius" R: a circle, or — for the مطبقة letters — a circle shut at the top by a lid:
+  // إطباق is "lidding" (from طَبَق, a lid), the tongue pressed up under the palate so the sound is boxed in
+  function shapeD(lid, R) {
+    if (!lid) return 'M ' + (-R) + ',0 a ' + R + ',' + R + ' 0 1,0 ' + (2 * R) + ',0 a ' + R + ',' + R + ' 0 1,0 ' + (-2 * R) + ',0 Z';
+    const h = 0.5 * R, a = Math.sqrt(R * R - h * h);
+    return 'M ' + (-a).toFixed(2) + ',' + (-h).toFixed(2) + ' A ' + R + ',' + R + ' 0 1,0 ' + a.toFixed(2) + ',' + (-h).toFixed(2) + ' Z';
+  }
+  // the lid itself: a bar across the flat top, overhanging a little
+  function lidD(R) {
+    const h = 0.5 * R, a = Math.sqrt(R * R - h * h) + 0.22 * R;
+    return 'M ' + (-a).toFixed(2) + ',' + (-h).toFixed(2) + ' L ' + a.toFixed(2) + ',' + (-h).toFixed(2);
+  }
+  // a letter as a small inline SVG (grid, letter panel): same shape, fill and ring rules as the cube
+  function nodeSvg(r, relState) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '-22 -22 44 44');
+    const st = nodeStyle(r);
+    const R = 14;
+    if (relState) {
+      const ring = document.createElementNS(ns, 'path');
+      ring.setAttribute('d', shapeD(isAcc(r), R + 4));
+      ring.setAttribute('fill', 'none');
+      ring.setAttribute('stroke', relState === 'mate' ? 'var(--color-fg-muted)' : 'var(--color-fg)');
+      ring.setAttribute('stroke-width', relState === 'self' ? 2.5 : 1.5);
+      if (relState === 'nb') ring.setAttribute('stroke-dasharray', '4 3');
+      if (relState === 'mate') ring.setAttribute('stroke-dasharray', '1.5 3');
+      svg.appendChild(ring);
+    }
+    const body = document.createElementNS(ns, 'path');
+    body.setAttribute('d', shapeD(isAcc(r), R));
+    body.setAttribute('fill', st.fill); body.setAttribute('stroke', st.stroke); body.setAttribute('stroke-width', st.sw);
+    svg.appendChild(body);
+    if (isAcc(r)) {
+      const lid = document.createElementNS(ns, 'path');
+      lid.setAttribute('d', lidD(R)); lid.setAttribute('fill', 'none'); lid.setAttribute('stroke', st.lidStroke || st.stroke);
+      lid.setAttribute('stroke-width', R * 0.24); lid.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(lid);
+    }
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', 0); t.setAttribute('y', 1); t.setAttribute('fill', st.text); t.textContent = glyph(r);
+    svg.appendChild(t);
+    return svg;
+  }
+  function anyFilter() { return filt.extra || filt.makhraj || filt.family || filt.mk || pinned; }
+
+  function proj(x, y, z) {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+    const y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+    return [W / 2 + x1 * S, H / 2 - 8 - y2 * S, z2];
+  }
+
+  function layer(name) {
+    let g = svg.select('g.' + name);
+    if (g.empty()) g = svg.append('g').attr('class', name);
+    return g;
+  }
+
+  function layout(n) {
+    if (n <= 1) return { pts: [[0, 0]], rr: 0 };
+    let center = false, m = n;
+    if (n >= 7) { center = true; m = n - 1; }
+    const rr = Math.max(R * 1.15, (R + 1.5) / Math.sin(Math.PI / m));
+    const pts = [];
+    if (center) pts.push([0, 0]);
+    for (let q = 0; q < m; q++) {
+      const a = -Math.PI / 2 + q * 2 * Math.PI / m;
+      pts.push([rr * Math.cos(a), rr * Math.sin(a)]);
+    }
+    return { pts, rr };
+  }
+
+  function render() {
+    W = stageBox.clientWidth || 600;
+    H = clamp(Math.round(W * 0.75), 360, 600);
+    svg.attr('viewBox', '0 0 ' + W + ' ' + H);
+    const hrGuess = 2 * 15.5 + 14 + 5; // largest bubble at the largest node size
+    const marginX = hrGuess + 70, marginY = hrGuess + 40;
+    const vExt = 0.5 * DY * Math.cos(pitch) + RH * Math.sin(pitch);
+    S = Math.max(70, Math.min((W / 2 - marginX) / RH, (H / 2 - marginY) / vExt)) * zoom;
+    R = clamp(S * 0.075, 10, 14);
+
+    const gPlanes = layer('planes'), gEdges = layer('edges'), gLabels = layer('labels'), gNodes = layer('nodes');
+
+    const quad = j => [[0, 0], [2, 0], [2, 1], [0, 1]].map(([i, k]) => proj(...pos(i, j, k)));
+    gPlanes.selectAll('path').data([0, 1]).join('path')
+      .attr('d', j => 'M' + quad(j).map(p => p[0] + ',' + p[1]).join('L') + 'Z')
+      .attr('fill', 'var(--color-fg)').attr('opacity', j => j ? 0.03 : 0.06);
+
+    // edges of the lattice; the ones joining a pinned letter to its one-family-away neighbours light up
+    const hot = new Set();
+    if (pinned) {
+      const pc = cellOf(pinned);
+      rows.forEach(s => {
+        const d = diffs(pinned, s);
+        if (d.length !== 1 || !POSKEY[d[0]]) return;
+        const sc = cellOf(s), ax = POSKEY[d[0]];
+        // walk unit edges from the pinned position to the neighbour's (strength can be two steps away)
+        const lo = Math.min(pc[ax], sc[ax]), hi = Math.max(pc[ax], sc[ax]);
+        for (let v = lo; v < hi; v++) {
+          const p1 = { ...pc, [ax]: v }, p2 = { ...pc, [ax]: v + 1 };
+          const k1 = p1.i + '-' + p1.j + '-' + p1.k, k2 = p2.i + '-' + p2.j + '-' + p2.k;
+          hot.add(k1 + '|' + k2); hot.add(k2 + '|' + k1);
+        }
+      });
+    }
+    const edges = [];
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) {
+      if (i < 2) edges.push([[i, j, k], [i + 1, j, k]]);
+      if (j < 1) edges.push([[i, j, k], [i, j + 1, k]]);
+      if (k < 1) edges.push([[i, j, k], [i, j, k + 1]]);
+    }
+    gEdges.selectAll('line').data(edges).join('line')
+      .each(function (e) {
+        const a = proj(...pos(...e[0])), b = proj(...pos(...e[1]));
+        const isHot = hot.has(e[0].join('-') + '|' + e[1].join('-'));
+        const depth = clamp(((a[2] + b[2]) / 2 + RH) / (2 * RH), 0, 1);
+        d3.select(this).attr('x1', a[0]).attr('y1', a[1]).attr('x2', b[0]).attr('y2', b[1])
+          .attr('stroke', isHot ? 'var(--color-fg)' : 'var(--cds-chart-grid)')
+          .attr('stroke-width', isHot ? 2 : 1)
+          .attr('opacity', isHot ? 1 : 0.45 + 0.55 * depth);
+      });
+
+    // each axis gets a ruler: a guide parallel to the lattice edge that faces the viewer, pushed outward past the largest cluster,
+    // with a tick and a label per value, so the words read as an axis rather than floating
+    const maxN = d3.max(rows.length ? d3.groups(rows, posKey) : [[0, []]], g => g[1].length) || 1;
+    const pad = layout(maxN).rr + R + 5 + 14;
+    const C = proj(0, 0, 0);
+    const hz = DZ / 2, hy = DY / 2;
+    const zFront = proj(0, 0, hz)[2] > proj(0, 0, -hz)[2] ? hz : -hz;
+    const xLeft = proj(-DX, 0, 0)[0] < proj(DX, 0, 0)[0] ? -DX : DX;
+    const zForY = proj(xLeft, 0, hz)[0] < proj(xLeft, 0, -hz)[0] ? hz : -hz;
+    const axes = [
+      { key: 'x', from: [-DX, -hy, zFront], to: [DX, -hy, zFront], names: XS, ts: [0, 0.5, 1] },
+      { key: 'y', from: [xLeft, -hy, zForY], to: [xLeft, hy, zForY], names: YS, ts: [0, 1] },
+      { key: 'z', from: [-xLeft, -hy, -hz], to: [-xLeft, -hy, hz], names: ZS, ts: [0, 1] }
+    ];
+    const labels = [], rulers = [];
+    axes.forEach(ax => {
+      const a = proj(ax.from[0], ax.from[1], ax.from[2]), b = proj(ax.to[0], ax.to[1], ax.to[2]);
+      let nx = -(b[1] - a[1]), ny = b[0] - a[0];
+      const n = Math.hypot(nx, ny);
+      const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+      if (n < 1) { nx = mx - C[0]; ny = my - C[1]; const m = Math.hypot(nx, ny) || 1; nx /= m; ny /= m; }
+      else { nx /= n; ny /= n; if ((mx - C[0]) * nx + (my - C[1]) * ny < 0) { nx = -nx; ny = -ny; } }
+      const ra = [a[0] + nx * pad, a[1] + ny * pad], rb = [b[0] + nx * pad, b[1] + ny * pad];
+      const ticks = ax.ts.map(t => [ra[0] + (rb[0] - ra[0]) * t, ra[1] + (rb[1] - ra[1]) * t]);
+      rulers.push({ key: ax.key, a: ra, b: rb, nx, ny, ticks });
+      // a ruler that runs mostly vertical gets its labels beside it, anchored away from the line; others get them below
+      const side = Math.abs(nx) > Math.abs(ny) ? (nx < 0 ? 'end' : 'start') : 'middle';
+      const gap = side === 'middle' ? 14 : 8;
+      ax.names.forEach((t, q) => labels.push({ t, side, p: [ticks[q][0] + nx * gap, ticks[q][1] + ny * gap] }));
+    });
+    gLabels.selectAll('line.ruler').data(rulers, d => d.key).join(e => e.insert('line', ':first-child').attr('class', 'ruler'))
+      .attr('x1', d => d.a[0]).attr('y1', d => d.a[1]).attr('x2', d => d.b[0]).attr('y2', d => d.b[1])
+      .attr('stroke', 'var(--cds-chart-axis)').attr('stroke-width', 1).attr('opacity', 0.7);
+    gLabels.selectAll('line.tick').data(rulers.flatMap(r => r.ticks.map((t, q) => ({ key: r.key + q, t, nx: r.nx, ny: r.ny }))), d => d.key)
+      .join(e => e.insert('line', 'text').attr('class', 'tick'))
+      .attr('x1', d => d.t[0] - d.nx * 3).attr('y1', d => d.t[1] - d.ny * 3).attr('x2', d => d.t[0] + d.nx * 4).attr('y2', d => d.t[1] + d.ny * 4)
+      .attr('stroke', 'var(--cds-chart-axis)').attr('stroke-width', 1).attr('opacity', 0.9);
+    gLabels.selectAll('text').data(labels, d => d.t).join('text')
+      .attr('text-anchor', d => d.side).attr('dominant-baseline', 'central')
+      .attr('font-size', 13)
+      .attr('fill', d => filt.family === d.t ? 'var(--color-fg)' : 'var(--color-fg-muted)')
+      .attr('font-weight', d => filt.family === d.t ? 600 : 400)
+      .attr('text-decoration', d => filt.family === d.t ? 'underline' : null)
+      .attr('x', d => d.p[0]).attr('y', d => d.p[1])
+      .text(d => d.t)
+      .on('click', (ev, d) => { ev.stopPropagation(); toggleFamily(d.t); });
+    // keep axis labels from meeting: measure each as drawn, then push overlapping pairs apart vertically
+    const lab = gLabels.selectAll('text').nodes().map(n => {
+      const w = (n.getComputedTextLength ? n.getComputedTextLength() : 60) + 10, x = +n.getAttribute('x');
+      const anchor = n.getAttribute('text-anchor');
+      const cx = anchor === 'start' ? x + w / 2 : anchor === 'end' ? x - w / 2 : x;
+      return { n, x, cx, y: +n.getAttribute('y'), w, h: 18 };
+    });
+    for (let it = 0; it < 6; it++) {
+      for (let a = 0; a < lab.length; a++) for (let b = a + 1; b < lab.length; b++) {
+        const A = lab[a], B = lab[b];
+        const ox = (A.w + B.w) / 2 - Math.abs(A.cx - B.cx), oy = A.h - Math.abs(A.y - B.y);
+        if (ox > 0 && oy > 0) { const s = (oy / 2 + 1) * (A.y <= B.y ? -1 : 1); A.y += s; B.y -= s; }
+      }
+    }
+    lab.forEach(l => {
+      const shift = clamp(l.cx, l.w / 2, W - l.w / 2) - l.cx;
+      l.n.setAttribute('x', l.x + shift); l.n.setAttribute('y', clamp(l.y, 10, H - 10));
+    });
+
+    const cells = d3.groups(rows, posKey);
+    const clusters = cells.map(([key, rs]) => {
+      const c = cellOf(rs[0]);
+      // letters that share a position are ordered so the ones differing by color or shape sit together
+      const sorted = rs.slice().sort((a, b) => (isAcc(b) - isAcc(a)) || (isDhalaq(b) - isDhalaq(a)) || (Number(a.id) - Number(b.id)));
+      return { key, rs: sorted, p: proj(...pos(c.i, c.j, c.k)) };
+    }).sort((a, b) => a.p[2] - b.p[2]);
+
+    const cg = gNodes.selectAll('g.cl').data(clusters, d => d.key)
+      .join(enter => enter.append('g').attr('class', 'cl'))
+      .order();
+
+    cg.each(function (d) {
+      const g = d3.select(this);
+      const L = layout(d.rs.length);
+      const depth = clamp((d.p[2] + RH) / (2 * RH), 0, 1);
+      const hr = L.rr + R + 5;
+      g.attr('transform', 'translate(' + d.p[0] + ',' + d.p[1] + ')').attr('opacity', 0.6 + 0.4 * depth);
+
+      g.selectAll('circle.halo').data([d])
+        .join(e => e.insert('circle', ':first-child').attr('class', 'halo'))
+        .attr('r', hr)
+        .attr('fill', 'var(--color-bg)').attr('fill-opacity', 0.92)
+        .attr('stroke', 'var(--color-border-line)');
+
+      const nodes = g.selectAll('g.nd').data(d.rs, r => r.id)
+        .join(e => {
+          const n = e.append('g').attr('class', 'nd');
+          n.append('path').attr('class', 'ring');
+          n.append('path').attr('class', 'body');
+          n.append('path').attr('class', 'lid');
+          n.append('text').attr('text-anchor', 'middle').attr('dominant-baseline', 'central');
+          return n;
+        });
+      nodes.attr('transform', (r, q) => 'translate(' + L.pts[q][0] + ',' + L.pts[q][1] + ')')
+        .attr('opacity', r => !active(r) ? 0.15 : (rel(r) === 'far' ? 0.3 : 1));
+      nodes.select('path.body')
+        .attr('d', r => shapeD(isAcc(r), R))
+        .attr('fill', r => nodeStyle(r).fill)
+        .attr('stroke', r => nodeStyle(r).stroke)
+        .attr('stroke-width', r => nodeStyle(r).sw);
+      nodes.select('path.lid')
+        .attr('d', r => isAcc(r) ? lidD(R) : null)
+        .attr('fill', 'none')
+        .attr('stroke', r => nodeStyle(r).lidStroke || nodeStyle(r).stroke)
+        .attr('stroke-width', R * 0.24).attr('stroke-linecap', 'round');
+      nodes.select('path.ring')
+        .attr('d', r => shapeD(isAcc(r), R + 4))
+        .attr('fill', 'none')
+        .attr('stroke', r => { const x = rel(r); return x === 'self' || x === 'nb' ? 'var(--color-fg)' : x === 'mate' ? 'var(--color-fg-muted)' : 'none'; })
+        .attr('stroke-width', r => rel(r) === 'self' ? 2.5 : 1.5)
+        .attr('stroke-dasharray', r => { const x = rel(r); return x === 'nb' ? '4 3' : x === 'mate' ? '1.5 3' : null; });
+      nodes.select('text').text(glyph).attr('font-size', R * 1.3).attr('fill', r => nodeStyle(r).text);
+      nodes.on('pointerenter', (ev, r) => showTip(ev, r)).on('pointermove', (ev) => placeTip(ev)).on('pointerleave', hideTip)
+        .on('click', (ev, r) => { ev.stopPropagation(); if (dragMoved) return; togglePin(r); });
+
+      const badge = g.selectAll('g.badge').data(d.rs.length > 1 ? [d] : [])
+        .join(e => { const b = e.append('g').attr('class', 'badge'); b.append('circle'); b.append('text').attr('text-anchor', 'middle').attr('dominant-baseline', 'central'); return b; });
+      badge.attr('transform', 'translate(' + ((hr + 2) * 0.5) + ',' + (-(hr + 2) * 0.866) + ')');
+      badge.select('circle').attr('r', 8).attr('fill', 'var(--color-panel)').attr('stroke', 'var(--color-border-line)');
+      badge.select('text').attr('font-size', 10).attr('fill', 'var(--color-fg-muted)').text(d.rs.length);
+    });
+  }
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function buildTip(r) {
+    tip.innerHTML = '';
+    const l = el('div', 'sc-tip-l', glyph(r));
+    l.appendChild(el('small', null, r.label));
+    tip.appendChild(l);
+    tip.appendChild(el('div', 'sc-tip-m', r.makhraj + (r.makhraj_detail ? ' · ' + r.makhraj_detail : '')));
+    const fam = el('div', 'sc-tip-row');
+    for (const v of [r.voice, r.strength, r.elevation, r.closure, r.fluency]) fam.appendChild(el('span', 'sc-tag', v));
+    tip.appendChild(fam);
+    const extras = EXTRA.filter(([k]) => Number(r[k]) === 1).map(([, n]) => n);
+    tip.appendChild(el('div', 'sc-tip-k', extras.length ? 'صفات منفردة' : 'لا صفات منفردة'));
+    if (extras.length) {
+      const ex = el('div', 'sc-tip-row');
+      for (const n of extras) ex.appendChild(el('span', 'sc-tag on', n));
+      tip.appendChild(ex);
+    }
+  }
+  function placeTip(ev) {
+    const bb = root.getBoundingClientRect();
+    const x = ev.clientX - bb.left, y = ev.clientY - bb.top;
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = x + 16;
+    if (left + tw > root.clientWidth) left = Math.max(0, x - tw - 16);
+    let top = y - th - 12;
+    if (top < 0) top = y + 18;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function showTip(ev, r) { hovering = true; buildTip(r); tip.style.display = 'block'; placeTip(ev); }
+  function hideTip() { hovering = false; tip.style.display = 'none'; }
+
+  function miniNode(r) {
+    const n = el('button', 'sc-node mini');
+    n.type = 'button';
+    n.appendChild(nodeSvg(r, ''));
+    n.title = r.label;
+    n.addEventListener('click', () => togglePin(r));
+    return n;
+  }
+
+  function renderDetail() {
+    detEl.innerHTML = '';
+    if (!pinned) {
+      detEl.appendChild(el('div', 'hint', 'انقر على حرف لعرض شركائه في الخانة (الصفات الخمس نفسها) والحروف التي تبعد عنه صفة واحدة — وهي الأزواج الصغرى التي تستحق التدريب.'));
+      return;
+    }
+    const r = pinned;
+    const big = el('div', 'big', glyph(r));
+    big.appendChild(el('small', null, r.label + (r.kind === 'مد' ? ' · حرف مد' : '')));
+    detEl.appendChild(big);
+    detEl.appendChild(el('div', 'm', r.makhraj + (r.makhraj_detail ? ' · ' + r.makhraj_detail : '')));
+    const fam = el('div', 'row');
+    for (const v of [r.voice, r.strength, r.elevation, r.closure, r.fluency]) fam.appendChild(el('span', 'sc-tag', v));
+    detEl.appendChild(fam);
+    const extras = EXTRA.filter(([k]) => Number(r[k]) === 1).map(([, n]) => n);
+    if (extras.length) {
+      const ex = el('div', 'row');
+      for (const n of extras) ex.appendChild(el('span', 'sc-tag on', n));
+      detEl.appendChild(ex);
+    }
+
+    const mates = rows.filter(s => s.id !== r.id && diffs(r, s).length === 0);
+    detEl.appendChild(el('h3', null, 'في الخانة نفسها (الصفات الخمس متطابقة)'));
+    if (mates.length) {
+      const row = el('div', 'nb');
+      mates.forEach(s => row.appendChild(miniNode(s)));
+      row.appendChild(el('span', 'lk', 'تختلف بالمخرج أو بالصفات المنفردة فقط'));
+      detEl.appendChild(row);
+    } else detEl.appendChild(el('div', 'muted', 'لا شريك — هذا الحرف وحده بصفاته الخمس'));
+
+    const nbs = rows.filter(s => s.id !== r.id && diffs(r, s).length === 1);
+    detEl.appendChild(el('h3', null, 'على بُعد صفة واحدة'));
+    if (nbs.length) {
+      const groups = d3.groups(nbs, s => { const k = diffs(r, s)[0]; return r[k] + '←→' + s[k]; });
+      groups.forEach(([lbl, ss]) => {
+        const row = el('div', 'nb');
+        row.appendChild(el('span', 'lk', lbl.replace('←→', ' ↔ ') + ':'));
+        ss.forEach(s => row.appendChild(miniNode(s)));
+        detEl.appendChild(row);
+      });
+    } else detEl.appendChild(el('div', 'muted', 'لا جار على بُعد صفة واحدة'));
+  }
+
+  function renderMnemo() {
+    mnemoEl.innerHTML = '';
+    if (filt.mk) {
+      const m = mkRows.find(x => Number(x.no) === filt.mk);
+      const ls = rows.filter(r => Number(r.makhraj_no) === filt.mk);
+      if (m) {
+        mnemoEl.appendChild(el('span', 'ar', 'المخرج ' + m.no + ' · ' + m.name));
+        mnemoEl.appendChild(el('span', 'q', m.place));
+        mnemoEl.appendChild(el('span', 'ar', ls.length ? ls.map(glyph).join(' ') : '(بلا حرف مستقل)'));
+      }
+      return;
+    }
+    const key = filt.family || (filt.extra ? EXTRA.find(([k]) => k === filt.extra)[1] : null);
+    if (!key) {
+      mnemoEl.appendChild(el('span', null, 'اختر صفة أو مخرجًا من الأعلى، أو انقر على عنوان محور، لعرض حروفه وضابطه.'));
+      return;
+    }
+    const letters = rows.filter(r => filt.family ? r[FAMKEY[filt.family]] === filt.family : Number(r[filt.extra]) === 1);
+    mnemoEl.appendChild(el('span', 'ar', key));
+    if (MNEMO[key]) mnemoEl.appendChild(el('span', 'q', '«' + MNEMO[key] + '»'));
+    mnemoEl.appendChild(el('span', 'ar', letters.map(glyph).join(' ')));
+  }
+
+  const mkSvg = d3.select('#sc-mk');
+  const mkDyn = mkSvg.select('#sc-mk-dyn');
+  const mkTbody = document.querySelector('#sc-mk-table tbody');
+  const mkLegend = document.getElementById('sc-mk-legend');
+  const mkHue = g => dash.colors[MK_HUE[g] ?? 5];
+  const mkLettersOf = no => rows.filter(r => Number(r.makhraj_no) === no);
+  function mkDim(m) { return (filt.makhraj && m.general !== filt.makhraj) || (filt.mk && m.no !== filt.mk); }
+  function mkPinned(m) { return !!(pinned && Number(pinned.makhraj_no) === m.no); }
+  function mkToggle(no) { filt.mk = filt.mk === no ? null : no; redraw(); }
+  function buildMkTip(m) {
+    tip.innerHTML = '';
+    tip.appendChild(el('div', 'sc-tip-l', (m.no) + ' · ' + m.name));
+    tip.appendChild(el('div', 'sc-tip-m', m.place));
+    const ls = mkLettersOf(m.no);
+    const row = el('div', 'sc-tip-row');
+    const gen = el('span', 'sc-tag', m.general); gen.style.borderColor = mkHue(m.general); gen.style.color = mkHue(m.general);
+    row.appendChild(gen);
+    if (ls.length) ls.forEach(r => row.appendChild(el('span', 'sc-tag on', glyph(r))));
+    else row.appendChild(el('span', 'sc-tag', 'الغنّة'));
+    tip.appendChild(row);
+  }
+  function showMkTip(ev, m) { hovering = true; buildMkTip(m); tip.style.display = 'block'; placeTip(ev); }
+
+  function renderMk() {
+    mkSvg.select('.jawf').attr('stroke', dash.colors[0]);
+    mkSvg.select('.jawf-head').attr('fill', dash.colors[0]);
+
+    const data = mkRows.map(m => ({ ...m, no: Number(m.no) })).filter(m => MK_M[m.no]).sort((a, b) => a.no - b.no);
+
+    const leads = data.filter(m => MK_L[m.no] && !MK_NOLEAD.has(m.no));
+    mkDyn.selectAll('line.lead').data(leads, m => m.no).join(e => e.insert('line', ':first-child')).attr('class', 'lead')
+      .attr('x1', m => MK_L[m.no][0]).attr('y1', m => MK_L[m.no][1]).attr('x2', m => MK_M[m.no][0]).attr('y2', m => MK_M[m.no][1])
+      .classed('dim', m => mkDim(m));
+
+    const mk = mkDyn.selectAll('g.mk').data(data, m => m.no).join(e => {
+      const g = e.append('g').attr('class', 'mk');
+      g.append('circle').attr('class', 'ring');
+      g.append('circle').attr('class', 'dot');
+      g.append('text').attr('class', 'no');
+      return g;
+    });
+    mk.attr('transform', m => 'translate(' + MK_M[m.no][0] + ',' + MK_M[m.no][1] + ')').classed('dim', m => mkDim(m));
+    mk.select('circle.dot').attr('r', m => filt.mk === m.no ? 16 : 13).attr('fill', m => mkHue(m.general));
+    mk.select('circle.ring').attr('r', 20).style('display', m => mkPinned(m) ? null : 'none');
+    mk.select('text.no').text(m => m.no);
+    mk.on('pointerenter', (ev, m) => showMkTip(ev, m)).on('pointermove', ev => placeTip(ev)).on('pointerleave', hideTip)
+      .on('click', (ev, m) => { ev.stopPropagation(); mkToggle(m.no); });
+
+    const labs = data.filter(m => MK_L[m.no]);
+    const lbl = mkDyn.selectAll('g.lbl').data(labs, m => m.no).join(e => {
+      const g = e.append('g').attr('class', 'lbl');
+      g.append('rect').attr('rx', 12);
+      g.append('text');
+      return g;
+    });
+    lbl.each(function (m) {
+      const [lx, ly] = MK_L[m.no];
+      const ls = mkLettersOf(m.no);
+      const g = d3.select(this);
+      const t = g.select('text').text(ls.length ? ls.map(glyph).join(' ') : 'الغنّة');
+      const w = (t.node().getComputedTextLength ? t.node().getComputedTextLength() : 60) + 26, h = 38;
+      // the pill is centred on its anchor; left-zone anchors (x < 130) hang the pill to the left of the anchor
+      const cx = lx < 140 ? lx - w / 2 : lx;
+      g.attr('transform', 'translate(' + cx + ',' + ly + ')');
+      g.select('rect').attr('x', -w / 2).attr('y', -h / 2).attr('width', w).attr('height', h).style('stroke', filt.mk === m.no || mkPinned(m) ? null : mkHue(m.general));
+      t.attr('x', 0).attr('y', 1);
+    });
+    lbl.classed('dim', m => mkDim(m)).classed('on', m => filt.mk === m.no || mkPinned(m))
+      .on('pointerenter', (ev, m) => showMkTip(ev, m)).on('pointermove', ev => placeTip(ev)).on('pointerleave', hideTip)
+      .on('click', (ev, m) => { ev.stopPropagation(); mkToggle(m.no); });
+
+    // list
+    const ml = dash.data('mkLetters');
+    const lettersByNo = {};
+    if (ml.status === 'ok' && Array.isArray(ml.data)) ml.data.forEach(x => { lettersByNo[Number(x.no)] = x.letters; });
+    mkTbody.innerHTML = '';
+    data.forEach(m => {
+      const tr = document.createElement('tr');
+      if (filt.mk === m.no || mkPinned(m)) tr.classList.add('on');
+      if (mkDim(m)) tr.classList.add('dim');
+      const tdNo = el('td', 'no', String(m.no)); tdNo.style.setProperty('--sw', mkHue(m.general));
+      tr.appendChild(tdNo);
+      tr.appendChild(el('td', null, m.general));
+      tr.appendChild(el('td', null, m.name));
+      tr.appendChild(el('td', 'letters', lettersByNo[m.no] != null ? (lettersByNo[m.no] || 'الغنّة') : '—'));
+      tr.addEventListener('pointerenter', ev => showMkTip(ev, m));
+      tr.addEventListener('pointermove', placeTip);
+      tr.addEventListener('pointerleave', hideTip);
+      tr.addEventListener('click', () => mkToggle(m.no));
+      mkTbody.appendChild(tr);
+    });
+
+    // legend of the five general places
+    mkLegend.innerHTML = '';
+    const seen = [];
+    data.forEach(m => { if (!seen.includes(m.general)) seen.push(m.general); });
+    seen.forEach(g => { const sp = el('span', null, g); sp.style.setProperty('--sw', mkHue(g)); if (filt.makhraj && g !== filt.makhraj) sp.style.opacity = .35; mkLegend.appendChild(sp); });
+  }
+
+  function renderFlat() {
+    flatEl.innerHTML = '';
+    flatEl.style.gridTemplateColumns = 'auto repeat(3, minmax(0, 1fr))';
+    flatEl.appendChild(el('div', 'h', ''));
+    const famSpan = v => {
+      const s = el('span', 'ar' + (filt.family === v ? ' on' : ''), v);
+      s.addEventListener('click', () => toggleFamily(v));
+      return s;
+    };
+    // the grid flows right-to-left, so columns are emitted in reverse to keep الشدة on the left, as on the X axis
+    const order = [2, 1, 0];
+    for (const i of order) {
+      const h = el('div', 'h');
+      h.appendChild(famSpan(XS[i]));
+      flatEl.appendChild(h);
+    }
+    for (const j of [1, 0]) for (const k of [1, 0]) {
+      const rh = el('div', 'rh');
+      const line = el('span');
+      line.appendChild(famSpan(YS[j]));
+      line.appendChild(document.createTextNode(' · '));
+      line.appendChild(famSpan(ZS[k]));
+      rh.appendChild(line);
+      flatEl.appendChild(rh);
+      for (const i of order) {
+        const rs = rows.filter(r => { const c = cellOf(r); return c.i === i && c.j === j && c.k === k; });
+        const cell = el('div', 'cell' + (rs.length ? '' : ' empty'));
+        for (const r of rs) {
+          const rs_ = rel(r);
+          const n = el('button', 'sc-node' + (active(r) ? '' : ' dim') + (rs_ === 'far' ? ' far' : ''));
+          n.type = 'button';
+          n.setAttribute('aria-label', r.label);
+          n.setAttribute('aria-pressed', pinned && pinned.id === r.id ? 'true' : 'false');
+          n.appendChild(nodeSvg(r, rs_ === 'far' ? '' : rs_));
+          n.addEventListener('pointerenter', ev => showTip(ev, r));
+          n.addEventListener('pointermove', placeTip);
+          n.addEventListener('pointerleave', hideTip);
+          n.addEventListener('click', () => togglePin(r));
+          cell.appendChild(n);
+        }
+        flatEl.appendChild(cell);
+      }
+    }
+  }
+
+  function swatch(hex, fill, stroke, sw) {
+    const wrap = el('span', 'sc-sw');
+    wrap.style.border = '0'; wrap.style.background = 'transparent'; wrap.style.width = 'auto'; wrap.style.height = 'auto';
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '-11 -11 22 22');
+    const pth = document.createElementNS(ns, 'path'); pth.setAttribute('d', shapeD(hex, 8.5));
+    pth.setAttribute('fill', fill); pth.setAttribute('stroke', stroke); pth.setAttribute('stroke-width', sw || 1.5);
+    svg.appendChild(pth);
+    if (hex) { const lid = document.createElementNS(ns, 'path'); lid.setAttribute('d', lidD(8.5)); lid.setAttribute('fill', 'none'); lid.setAttribute('stroke', 'var(--color-fg)'); lid.setAttribute('stroke-width', 2.2); lid.setAttribute('stroke-linecap', 'round'); svg.appendChild(lid); }
+    wrap.appendChild(svg);
+    return wrap;
+  }
+  function renderLegendColor() {
+    legShape.innerHTML = '';
+    legShape.appendChild(swatch(true, 'var(--color-bg)', 'var(--cds-chart-axis)'));
+    legShape.appendChild(el('span', 'ar', 'الإطباق'));
+    legShape.appendChild(el('span', 'en', ' مقابل '));
+    legShape.appendChild(swatch(false, 'var(--color-bg)', 'var(--cds-chart-axis)'));
+    legShape.appendChild(el('span', 'ar', 'الانفتاح'));
+    legShape.appendChild(el('br'));
+    legShape.appendChild(el('span', 'en', 'دائرة مُغلقة بغطاء = مطبق (ص ض ط ظ): اللسان مُطبَق على الحنك فينحصر الصوت؛ دائرة مفتوحة = منفتح'));
+    legColor.innerHTML = '';
+    if (colorBy === 'makhraj') {
+      MAKHRAJ.forEach((m, i) => {
+        legColor.appendChild(swatch(false, mix(dash.colors[i]), dash.colors[i], 2));
+        legColor.appendChild(el('span', 'ar', m + ' '));
+      });
+    } else {
+      legColor.appendChild(el('span', 'en', 'بلا لون — اختر «المخرج» فوق المكعب لتلوين الحروف بمواضعها'));
+    }
+  }
+
+  function redraw() {
+    syncChips();
+    clearBtn.hidden = !anyFilter();
+    render();
+    renderFlat();
+    renderDetail();
+    renderMnemo();
+    renderMk();
+  }
+  function toggleFamily(v) { filt.family = filt.family === v ? null : v; redraw(); }
+  function togglePin(r) { pinned = pinned && pinned.id === r.id ? null : r; redraw(); }
+
+  function syncChips() {
+    document.querySelectorAll('.sc-chip[data-group]').forEach(b => {
+      b.setAttribute('aria-pressed', filt[b.dataset.group] === b.dataset.key ? 'true' : 'false');
+    });
+  }
+  document.querySelectorAll('.sc-chip[data-group]').forEach(b => b.addEventListener('click', () => {
+    const g = b.dataset.group, k = b.dataset.key;
+    filt[g] = filt[g] === k ? null : k;
+    redraw();
+  }));
+  clearBtn.addEventListener('click', () => { filt = { extra: null, makhraj: null, family: null, mk: null }; pinned = null; redraw(); });
+
+  Object.entries(colBtns).forEach(([k, b]) => b.addEventListener('click', () => {
+    colorBy = k;
+    Object.entries(colBtns).forEach(([k2, b2]) => b2.setAttribute('aria-pressed', k2 === colorBy ? 'true' : 'false'));
+    renderLegendColor();
+    redraw();
+  }));
+  renderLegendColor();
+
+  zoomEl.addEventListener('input', () => { zoom = Number(zoomEl.value) || 1; render(); });
+
+  function syncSpin() {
+    spinBtn.setAttribute('aria-pressed', spinning ? 'true' : 'false');
+    spinBtn.textContent = spinning ? '⏸ إيقاف' : '⟳ دوران';
+  }
+  spinBtn.addEventListener('click', () => { spinning = !spinning; syncSpin(); });
+  resetBtn.addEventListener('click', () => { yaw = YAW0; pitch = PITCH0; zoom = 1; zoomEl.value = '1'; render(); });
+  syncSpin();
+
+  svgEl.addEventListener('pointerdown', ev => {
+    drag = { x: ev.clientX, y: ev.clientY, yaw, pitch };
+    dragMoved = false;
+    spinning = false; syncSpin();
+    svgEl.setPointerCapture(ev.pointerId);
+    svgEl.classList.add('is-drag');
+  });
+  svgEl.addEventListener('pointermove', ev => {
+    if (!drag) return;
+    const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 4) dragMoved = true;
+    if (!dragMoved) return;
+    yaw = drag.yaw + dx * 0.008;
+    pitch = clamp(drag.pitch + dy * 0.008, PITCH_MIN, PITCH_MAX);
+    render();
+  });
+  const endDrag = () => { drag = null; svgEl.classList.remove('is-drag'); setTimeout(() => { dragMoved = false; }, 0); };
+  svgEl.addEventListener('pointerup', endDrag);
+  svgEl.addEventListener('pointercancel', endDrag);
+  svgEl.addEventListener('click', () => { if (!dragMoved && pinned) { pinned = null; redraw(); } });
+  svgEl.addEventListener('keydown', ev => {
+    const step = 0.08;
+    if (ev.key === 'ArrowLeft') yaw -= step;
+    else if (ev.key === 'ArrowRight') yaw += step;
+    else if (ev.key === 'ArrowUp') pitch = clamp(pitch + step, PITCH_MIN, PITCH_MAX);
+    else if (ev.key === 'ArrowDown') pitch = clamp(pitch - step, PITCH_MIN, PITCH_MAX);
+    else if (ev.key === 'Escape') { if (pinned) { pinned = null; redraw(); } return; }
+    else return;
+    ev.preventDefault();
+    spinning = false; syncSpin();
+    render();
+  });
+
+  function loop() {
+    if (spinning && !hovering && !drag && rows.length) {
+      // one full turn in about half a minute
+      yaw -= 0.0035;
+      if (yaw < -Math.PI) yaw += 2 * Math.PI;
+      render();
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  function fillCalcs() {
+    const oc = dash.data('occupancy');
+    document.querySelectorAll('[data-source="occupancy"]').forEach(e => {
+      const v = oc.status === 'ok' && oc.data ? oc.data[e.dataset.field] : null;
+      e.textContent = v == null ? '—' : d3.format(',')(v);
+    });
+    const gr = dash.data('groups');
+    document.querySelectorAll('.sc-chip .sc-n').forEach(e => {
+      const b = e.closest('.sc-chip');
+      const row = gr.status === 'ok' && Array.isArray(gr.data) ? gr.data.find(x => x.group === b.dataset.group && x.key === b.dataset.ar) : null;
+      e.textContent = row ? d3.format(',')(row.n) : '—';
+    });
+  }
+
+  dash.onData(() => {
+    const mkSt = dash.data('makharij');
+    mkRows = mkSt.status === 'ok' && Array.isArray(mkSt.data) ? mkSt.data : [];
+    const st = dash.data('letters');
+    if (st.status === 'ok') {
+      rows = st.data.map(r => ({ ...r, id: String(r.id) }));
+      if (pinned) pinned = rows.find(r => r.id === pinned.id) || null;
+      stageBox.classList.remove('dash-skeleton');
+      failEl.hidden = true;
+      svgEl.style.display = '';
+      redraw();
+    } else if (st.status === 'loading') {
+      rows = [];
+      stageBox.classList.add('dash-skeleton');
+      svgEl.style.display = 'none';
+      failEl.hidden = true;
+      flatEl.innerHTML = '';
+      mnemoEl.innerHTML = '';
+      renderMk();
+    } else {
+      rows = [];
+      stageBox.classList.remove('dash-skeleton');
+      svgEl.style.display = 'none';
+      failEl.hidden = false;
+      flatEl.innerHTML = '';
+      mnemoEl.innerHTML = '';
+      renderMk();
+    }
+    fillCalcs();
+  });
+})();
+</script>
+
+</div>
+</body>
+</html>
